@@ -8,10 +8,15 @@ import javafx.stage.Stage
 
 class Window() : Application() {
 
+    lateinit var controller: MainSceneController;
+
     override fun start(primaryStage: Stage?) {
-        var root: Parent =FXMLLoader.load(this.javaClass.getResource("/layouts/MainScene.fxml"));
+        var loader:FXMLLoader=FXMLLoader(this.javaClass.getResource("/layouts/MainScene.fxml"));
+        var root: Parent =loader.load();
         var scene: Scene=Scene(root);
         var stage: Stage=Stage();
+
+        controller=loader.getController();
 
         stage.scene=scene;
         stage.title="Glock sphere";
