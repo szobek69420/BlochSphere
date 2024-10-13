@@ -1,0 +1,72 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+dependencies {
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    implementation 'org.openjfx:javafx-controls:17'
+    implementation 'org.openjfx:javafx-fxml:17'
+}
+
+javafx {
+    version = "21.0.1"
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
+test {
+    useJUnitPlatform()
+}
+
+run {
+    standardInput = System.in
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+sourceSets {
+    main {
+        kotlin {
+            srcDirs = ['src']
+        }
+        java {
+            srcDirs = ['src']
+        }
+    }
+    test {
+        kotlin {
+            srcDirs = ['src']
+        }
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
+
+java {
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+}
+
+
+shadowJar {
+    duplicatesStrategy=DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes["Main-Class"] = "main.java.Main"
+    }
+}
+
+application {
+    mainClassName = 'main.java.Main'
+}
