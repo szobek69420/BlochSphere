@@ -14,6 +14,7 @@ class Window() : Application() {
         var stage: Stage=Stage();
 
         stage.scene=scene;
+        stage.title="Glock sphere";
         stage.show();
     }
 }
