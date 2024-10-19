@@ -60,7 +60,7 @@ java {
     targetCompatibility = '17'
 }
 
-
+//to build fat jars
 shadowJar {
     duplicatesStrategy=DuplicatesStrategy.EXCLUDE
     manifest {
