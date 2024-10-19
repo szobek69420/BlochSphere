@@ -32,7 +32,9 @@ class Window() : Application() {
     override fun start(primaryStage: Stage?) {
         var loader:FXMLLoader=FXMLLoader(this.javaClass.getResource("/layouts/MainScene.fxml"));
         root =loader.load();
+
         var scene: Scene=Scene(root);
+        scene.stylesheets.add(this.javaClass.getResource("/stylesheets/font.css")?.toExternalForm());
 
         controller=loader.getController();
 
