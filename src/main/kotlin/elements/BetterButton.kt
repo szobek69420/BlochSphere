@@ -2,37 +2,27 @@ package main.kotlin.elements
 
 import javafx.event.EventHandler
 import javafx.geometry.Insets
-import javafx.geometry.Pos
-import javafx.scene.control.Label
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.layout.CornerRadii
 import javafx.scene.paint.Color
-import javafx.scene.text.TextAlignment
 
 
-class BetterButton(var text:String): AnchorPane() {
-
-    var textColour:Color=Color(0.0,0.0,0.0,1.0);
+class BetterButton(): AnchorPane() {
 
     var normalColour:Color=Color(1.0,1.0,1.0,1.0);
     var hoverColour:Color=Color(0.8,0.8,0.8,1.0);
     var pressedColour:Color=Color(0.6,0.6,0.6,1.0);
 
-    var textComponent:Label;
+    var image:ImageView;
 
     var callback:(()->Unit)?=null;
 
     init{
-        textComponent=Label(text);
-        children.add(textComponent);
-
-        textComponent.textFill=textColour;
-        textComponent.alignment= Pos.CENTER;
-        textComponent.textAlignment=TextAlignment.CENTER;
-
         changeBackgroundColour(normalColour);
 
         val handler:BetterButtonMouseHandler= BetterButtonMouseHandler(this);
@@ -42,22 +32,28 @@ class BetterButton(var text:String): AnchorPane() {
         onMouseEntered=handler;
         onMouseExited=handler;
 
-        layoutBoundsProperty().addListener() { _, _, newValue ->
-            textComponent.minWidth=newValue.width;
-            textComponent.minHeight=newValue.height;
+        image=ImageView();
+        this.children.add(image);
+        image.isPreserveRatio=true;
 
+        layoutBoundsProperty().addListener() { _, _, newValue ->
+            image.fitWidth=newValue.width;
+            image.fitHeight=newValue.height;
         }
     }
 
-    fun changeColours(_textColour:Color,_normalColour:Color,_hoverColour:Color,_pressedColour:Color)
+    fun changeColours(_normalColour:Color,_hoverColour:Color,_pressedColour:Color)
     {
-        textColour=_textColour;
-        textComponent.textFill=textColour;
-
         normalColour=_normalColour;
         hoverColour=_hoverColour;
         pressedColour=_pressedColour;
         (onMouseDragged as BetterButtonMouseHandler).refreshColours();
+    }
+
+    fun changeImage(imagePath:String)
+    {
+        val sus:Image=Image(this.javaClass.getResourceAsStream(imagePath));
+        image.image=sus;
     }
 
     private fun changeBackgroundColour(colour: Color)

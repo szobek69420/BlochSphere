@@ -37,10 +37,11 @@ class SphereView(var subScene:SubScene) {
 
         light = DirectionalLight();
         light.apply{
-            var rotation: Rotate = Rotate(30.0, Point3D(1.0,0.0,0.0));
+            var rotation: Rotate = Rotate(-30.0, Point3D(1.0,0.0,0.0));
+            var rotation2:Rotate=Rotate(-30.0,Point3D(0.0,1.0,0.0));
             var translation: Translate = Translate(0.0,10.0,0.0);
             transforms.clear();
-            transforms.addAll(rotation,translation);
+            transforms.addAll(rotation,rotation2,translation);
         }
 
 

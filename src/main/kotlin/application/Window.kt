@@ -5,10 +5,12 @@ import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
+import javafx.scene.image.Image
 import javafx.scene.input.MouseEvent
 import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
+
 
 class Window() : Application() {
 
@@ -38,15 +40,17 @@ class Window() : Application() {
         stage.scene=scene;
         stage.title="Glock sphere";
         stage.initStyle(StageStyle.UNDECORATED);
-
-        val mouseHandler:MouseEventHandler=MouseEventHandler(stage);
-        controller.menuBar.onMousePressed=mouseHandler;
-        controller.menuBar.onMouseDragged=mouseHandler;
-        controller.menuBar.onMouseReleased=mouseHandler;
+        val icon:Image= Image(this.javaClass.getResourceAsStream("/sprites/icon.png"));
+        stage.icons.add(icon);
 
         controller.initScene();
 
         stage.show();
+
+        val mouseHandler:MouseEventHandler=MouseEventHandler(stage){event->onApplicationRescale(event);};//a stage show utan kell letrehozni, mert konstruktorban lekeri a stage mereteit
+        controller.menuBar.onMousePressed=mouseHandler;
+        controller.menuBar.onMouseDragged=mouseHandler;
+        controller.menuBar.onMouseReleased=mouseHandler;
     }
 
     fun closeApplication()
@@ -54,16 +58,42 @@ class Window() : Application() {
         stage.close();
     }
 
-    //needed to move around my borderless window
-    class MouseEventHandler(val stage:Stage) : EventHandler<MouseEvent>
+    fun minimizeApplication()
     {
-        var offsetX:Double=0.0;
-        var offsetY:Double=0.0;
+        stage.isIconified=true;
+    }
 
-        var previousOffsetX:Double=0.0;
-        var previousOffsetY:Double=0.0;
-        var previousWidth:Double=0.0;
-        var previousHeight:Double=0.0;
+    //full size or not, returns true, if it got maximized
+    fun rescaleApplication() :Boolean
+    {
+        val handler:MouseEventHandler=controller.menuBar.onMouseDragged as MouseEventHandler;
+
+        if(handler.screenState==MouseEventHandler.ScreenState.FULL)
+            handler.desiredScreenState=MouseEventHandler.ScreenState.NORMAL;
+        else
+            handler.desiredScreenState=MouseEventHandler.ScreenState.FULL;
+
+        handler.adjustScreenState(null);
+        controller.changeRescaleImage(handler.screenState==MouseEventHandler.ScreenState.FULL);
+
+        return handler.screenState==MouseEventHandler.ScreenState.FULL;
+    }
+
+    private fun onApplicationRescale(handler:MouseEventHandler)
+    {
+        controller.changeRescaleImage(handler.screenState==MouseEventHandler.ScreenState.FULL);
+    }
+
+    //needed to move around my borderless window
+    class MouseEventHandler(private val stage:Stage, private val onRescale:((MouseEventHandler)->Unit)?) : EventHandler<MouseEvent>
+    {
+        private var offsetX:Double=0.0;
+        private var offsetY:Double=0.0;
+
+        private var previousOffsetX:Double=0.0;
+        private var previousOffsetY:Double=0.0;
+        private var previousWidth:Double=0.0;
+        private var previousHeight:Double=0.0;
 
         //where does the screen orient itself
         enum class ScreenState{
@@ -72,7 +102,12 @@ class Window() : Application() {
 
         var screenState:ScreenState=ScreenState.NORMAL;
         var desiredScreenState:ScreenState=ScreenState.NORMAL;
-        val SCREEN_STAGE_CHANGE_THRESHOLD:Double=2.0;//if the mouse is within 2 pixels of the screens top/left/right side, the screen will want to change state
+        private val SCREEN_STAGE_CHANGE_THRESHOLD:Double=2.0;//if the mouse is within 2 pixels of the screens top/left/right side, the screen will want to change state
+
+        init{
+            previousWidth=stage.width;
+            previousHeight=stage.height;
+        }
 
         override fun handle(event: MouseEvent?) {
             if(event==null)
@@ -86,24 +121,24 @@ class Window() : Application() {
                     when(screenState)
                     {
                         ScreenState.FULL->{
-                            if(stage.y>Screen.getPrimary().bounds.minY+SCREEN_STAGE_CHANGE_THRESHOLD)
+                            if(stage.y>Screen.getPrimary().visualBounds.minY+SCREEN_STAGE_CHANGE_THRESHOLD)
                                 shouldRealignToNormal=true;
                         }
                         ScreenState.LEFT->{
-                            if(stage.x>Screen.getPrimary().bounds.minX+SCREEN_STAGE_CHANGE_THRESHOLD)
+                            if(stage.x>Screen.getPrimary().visualBounds.minX+SCREEN_STAGE_CHANGE_THRESHOLD)
                                 shouldRealignToNormal=true;
                         }
                         ScreenState.RIGHT->{
-                            if(stage.x+stage.width<Screen.getPrimary().bounds.maxX-SCREEN_STAGE_CHANGE_THRESHOLD)
+                            if(stage.x+stage.width<Screen.getPrimary().visualBounds.maxX-SCREEN_STAGE_CHANGE_THRESHOLD)
                                 shouldRealignToNormal=true;
                         }
 
                         ScreenState.NORMAL -> {
-                            if(event.screenY<Screen.getPrimary().bounds.minY+SCREEN_STAGE_CHANGE_THRESHOLD)
+                            if(event.screenY<Screen.getPrimary().visualBounds.minY+SCREEN_STAGE_CHANGE_THRESHOLD)
                                 desiredScreenState=ScreenState.FULL;
-                            else if(event.screenX<Screen.getPrimary().bounds.minX+SCREEN_STAGE_CHANGE_THRESHOLD)
+                            else if(event.screenX<Screen.getPrimary().visualBounds.minX+SCREEN_STAGE_CHANGE_THRESHOLD)
                                 desiredScreenState=ScreenState.LEFT;
-                            else if(event.screenX>Screen.getPrimary().bounds.maxX-SCREEN_STAGE_CHANGE_THRESHOLD)
+                            else if(event.screenX>Screen.getPrimary().visualBounds.maxX-SCREEN_STAGE_CHANGE_THRESHOLD)
                                 desiredScreenState=ScreenState.RIGHT;
                             else
                                 desiredScreenState=ScreenState.NORMAL;
@@ -119,6 +154,8 @@ class Window() : Application() {
                         stage.height=previousHeight;
 
                         screenState=ScreenState.NORMAL;
+
+                        onRescale?.invoke(this);
                     }
 
                     stage.x=event.screenX-offsetX;
@@ -129,45 +166,65 @@ class Window() : Application() {
                     offsetY=event.sceneY;
                 }
                 MouseEvent.MOUSE_RELEASED->{
-                    if(screenState!=ScreenState.NORMAL)//does not want to override the current abnormal screen state
-                        return;
-
-                    if(desiredScreenState==ScreenState.NORMAL)//nothing should be applied
-                        return;
-
-                    previousOffsetX=event.sceneX;
-                    previousOffsetY=event.sceneY;
-                    previousWidth=stage.width;
-                    previousHeight=stage.height;
-
-                    when(desiredScreenState)
-                    {
-                        ScreenState.FULL->{
-                            stage.x=Screen.getPrimary().bounds.minX;
-                            stage.y=Screen.getPrimary().bounds.minY;
-                            stage.width=Screen.getPrimary().bounds.width;
-                            stage.height=Screen.getPrimary().bounds.height;
-                        }
-                        ScreenState.LEFT->{
-                            stage.x=Screen.getPrimary().bounds.minX;
-                            stage.y=Screen.getPrimary().bounds.minY;
-                            stage.width=Screen.getPrimary().bounds.width*0.5;
-                            stage.height=Screen.getPrimary().bounds.height;
-                        }
-                        ScreenState.RIGHT->{
-                            stage.x=0.5*(Screen.getPrimary().bounds.maxX-Screen.getPrimary().bounds.minX);
-                            stage.y=Screen.getPrimary().bounds.minY;
-                            stage.width=Screen.getPrimary().bounds.width*0.5;
-                            stage.height=Screen.getPrimary().bounds.height;
-                        }
-
-                        ScreenState.NORMAL -> {}
-                    }
-
-                    screenState=desiredScreenState;
+                    adjustScreenState(event);
                 }
             }
         }
 
+
+        fun adjustScreenState(event: MouseEvent?)
+        {
+            if(desiredScreenState==screenState)
+                return;
+
+            if(event!=null)
+            {
+                previousOffsetX=event.sceneX;
+                previousOffsetY=event.sceneY;
+
+                previousWidth=stage.width;
+                previousHeight=stage.height;
+            }
+            else
+            {
+                previousOffsetX=stage.width*0.5;
+                previousOffsetY=20.0;
+            }
+
+            when(desiredScreenState)
+            {
+                ScreenState.FULL->{
+                    stage.x=Screen.getPrimary().visualBounds.minX;
+                    stage.y=Screen.getPrimary().visualBounds.minY;
+                    stage.width=Screen.getPrimary().visualBounds.minX+Screen.getPrimary().visualBounds.width;
+                    stage.height=Screen.getPrimary().visualBounds.minY+Screen.getPrimary().visualBounds.height;
+                }
+                ScreenState.LEFT->{
+                    stage.x=Screen.getPrimary().visualBounds.minX;
+                    stage.y=Screen.getPrimary().visualBounds.minY;
+                    stage.width=Screen.getPrimary().visualBounds.width*0.5;
+                    stage.height=Screen.getPrimary().visualBounds.height;
+                }
+                ScreenState.RIGHT->{
+                    stage.x=0.5*(Screen.getPrimary().visualBounds.maxX-Screen.getPrimary().visualBounds.minX);
+                    stage.y=Screen.getPrimary().visualBounds.minY;
+                    stage.width=Screen.getPrimary().visualBounds.width*0.5;
+                    stage.height=Screen.getPrimary().visualBounds.height;
+                }
+
+                ScreenState.NORMAL -> {
+                    stage.width=previousWidth;
+                    stage.height=previousHeight;
+                    stage.x=Screen.getPrimary().visualBounds.minX+Screen.getPrimary().visualBounds.width*0.5-stage.width*0.5;
+                    stage.y=Screen.getPrimary().visualBounds.minY+Screen.getPrimary().visualBounds.height*0.5-stage.height*0.5;
+
+                    screenState=ScreenState.NORMAL;
+                }
+            }
+
+            screenState=desiredScreenState;
+
+            onRescale?.invoke(this);
+        }
     }
 }
