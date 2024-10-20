@@ -3,11 +3,17 @@ package main.kotlin.view
 import javafx.event.EventHandler
 import javafx.geometry.Point3D
 import javafx.scene.*
+import javafx.scene.effect.BlendMode
+import javafx.scene.image.Image
 import javafx.scene.input.MouseEvent
+import javafx.scene.input.ScrollEvent
+import javafx.scene.paint.Color
+import javafx.scene.paint.PhongMaterial
 import javafx.scene.shape.Shape3D
 import javafx.scene.shape.Sphere
 import javafx.scene.transform.Rotate
 import javafx.scene.transform.Translate
+import main.kotlin.elements.Line3D
 
 
 class SphereView(var subScene:SubScene) {
@@ -21,10 +27,23 @@ class SphereView(var subScene:SubScene) {
 
     init{
         sphere=Sphere();
-        sphere.apply{
-            transforms.clear();
-            transforms.addAll(Translate(0.0,0.0,0.0));
+        sphere.let{
+            it.transforms.clear();
+            it.transforms.addAll(Translate(0.0,0.0,0.0));
+
+            val diffuseMap:Image= Image(this.javaClass.getResourceAsStream("/sprites/sphere_diffuse_map.png"));
+            val mat:PhongMaterial=PhongMaterial(Color(1.0,1.0,1.0,0.1));
+            mat.diffuseMap=diffuseMap;
+            mat.specularColor=Color.TRANSPARENT;
+            it.material=mat;
+
+            it.blendMode=BlendMode.MULTIPLY;
         }
+
+        val line:Line3D= Line3D(Point3D(0.0,0.0,0.0), Point3D(-1.0,-2.0,0.0),0.2);
+        line.phonkMaterial.diffuseColor=Color.RED;
+        line.blendMode=BlendMode.MULTIPLY;
+        line.transforms.add(0,Translate(0.0,0.0,0.0));
 
         camera = PerspectiveCamera(true);
         camera.apply {
@@ -35,23 +54,16 @@ class SphereView(var subScene:SubScene) {
         updateCameraRotation();
 
 
-        light = DirectionalLight();
-        light.apply{
-            var rotation: Rotate = Rotate(-30.0, Point3D(1.0,0.0,0.0));
-            var rotation2:Rotate=Rotate(-30.0,Point3D(0.0,1.0,0.0));
-            var translation: Translate = Translate(0.0,10.0,0.0);
-            transforms.clear();
-            transforms.addAll(rotation,rotation2,translation);
-        }
-
+        light = AmbientLight();
 
         var rootGroup:Group;
         if(subScene.root is Group)
         {
             rootGroup=subScene.root as Group;
 
-            rootGroup.children.add(sphere);
             rootGroup.children.add(light);
+            rootGroup.children.add(line);
+            rootGroup.children.add(sphere);
 
             subScene.camera=camera;
 
@@ -59,6 +71,9 @@ class SphereView(var subScene:SubScene) {
             this.subScene.onMousePressed=mouseHandler;
             this.subScene.onMouseReleased=mouseHandler;
             this.subScene.onMouseDragged=mouseHandler;
+
+            val scrollHandler:SphereViewScrollHandler= SphereViewScrollHandler(this);
+            this.subScene.onScroll=scrollHandler;
         }
         else
             System.err.println("SphereView: subScene.root must be or derived from Group to produce desirable results");
@@ -95,12 +110,12 @@ class SphereView(var subScene:SubScene) {
                     val deltaX=event.screenX-prevPosX;
                     val deltaY=event.screenY-prevPosY;
 
-                    view.cameraHRot+=deltaX;
+                    view.cameraHRot+=(view.cameraDistance/20.0)*deltaX;
                     if(view.cameraVRot<-180.0)
                         view.cameraVRot+=360.0;
                     else if(view.cameraVRot>180.0)
                         view.cameraVRot-=360.0;
-                    view.cameraVRot-=deltaY;
+                    view.cameraVRot-=(view.cameraDistance/20.0)*deltaY;
                     if(view.cameraVRot<-88.0)
                         view.cameraVRot=-88.0;
                     else if(view.cameraVRot>88.0)
@@ -120,5 +135,22 @@ class SphereView(var subScene:SubScene) {
                 MouseEvent.MOUSE_RELEASED -> inPress=false;
             }
         }
+    }
+
+    private class SphereViewScrollHandler(val view:SphereView):EventHandler<ScrollEvent>
+    {
+        override fun handle(event: ScrollEvent?) {
+            if(event==null)
+                return;
+
+            view.cameraDistance-=0.01*event.deltaY;
+            if(view.cameraDistance>10.0)
+                view.cameraDistance=10.0;
+            if(view.cameraDistance<3.0)
+                view.cameraDistance=3.0;
+
+            view.updateCameraRotation();
+        }
+
     }
 }

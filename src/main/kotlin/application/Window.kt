@@ -34,7 +34,7 @@ class Window() : Application() {
         root =loader.load();
 
         var scene: Scene=Scene(root);
-        scene.stylesheets.add(this.javaClass.getResource("/stylesheets/font.css")?.toExternalForm());
+        scene.stylesheets.add(this.javaClass.getResource("/stylesheets/font.roblox")?.toExternalForm());
 
         controller=loader.getController();
 
