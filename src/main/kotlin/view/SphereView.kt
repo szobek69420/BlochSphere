@@ -1,5 +1,6 @@
 package main.kotlin.view
 
+import com.interactivemesh.jfx.importer.obj.ObjModelImporter
 import javafx.event.EventHandler
 import javafx.geometry.Point3D
 import javafx.scene.*
@@ -9,15 +10,14 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 import javafx.scene.paint.Color
 import javafx.scene.paint.PhongMaterial
-import javafx.scene.shape.Shape3D
-import javafx.scene.shape.Sphere
+import javafx.scene.shape.MeshView
 import javafx.scene.transform.Rotate
 import javafx.scene.transform.Translate
 import main.kotlin.elements.Line3D
 
 
 class SphereView(var subScene:SubScene) {
-    var sphere: Shape3D;
+    var sphere: MeshView;
     var light: LightBase;
 
     var camera: PerspectiveCamera;
@@ -26,7 +26,9 @@ class SphereView(var subScene:SubScene) {
     var cameraDistance:Double=10.0;
 
     init{
-        sphere=Sphere();
+        val importer:ObjModelImporter=ObjModelImporter();
+        sphere=importSphere(importer);
+        importer.close();
         sphere.let{
             it.transforms.clear();
             it.transforms.addAll(Translate(0.0,0.0,0.0));
@@ -91,6 +93,13 @@ class SphereView(var subScene:SubScene) {
         camera.transforms.add(rotationHorizontal);
         camera.transforms.add(rotationVertical);
         camera.transforms.add(translation);
+    }
+
+    private fun importSphere(importer:ObjModelImporter):MeshView
+    {
+        importer.clear();
+        importer.read(this.javaClass.getResource("/models/sphere_grid.sugus"));
+        return importer.import[0];
     }
 
 
