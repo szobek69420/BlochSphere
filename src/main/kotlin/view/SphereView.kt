@@ -12,18 +12,22 @@ import javafx.scene.paint.Color
 import javafx.scene.paint.PhongMaterial
 import javafx.scene.shape.MeshView
 import javafx.scene.transform.Rotate
+import javafx.scene.transform.Scale
 import javafx.scene.transform.Translate
 import main.kotlin.elements.Line3D
 
 
 class SphereView(var subScene:SubScene) {
-    var sphere: MeshView;
-    var light: LightBase;
+    private var sphere: MeshView;
+    private var light: LightBase;
+    private lateinit var axes:Array<Axis?>;
 
-    var camera: PerspectiveCamera;
-    var cameraHRot:Double=0.0;
-    var cameraVRot:Double=0.0;
-    var cameraDistance:Double=10.0;
+    private var camera: PerspectiveCamera;
+    private var cameraHRot:Double=-145.0;
+    private var cameraVRot:Double=-30.0;
+    private var cameraDistance:Double=10.0;
+
+    private data class Axis(val line:Line3D, val cone:MeshView)
 
     init{
         val importer:ObjModelImporter=ObjModelImporter();
@@ -34,7 +38,7 @@ class SphereView(var subScene:SubScene) {
             it.transforms.addAll(Translate(0.0,0.0,0.0));
 
             val diffuseMap:Image= Image(this.javaClass.getResourceAsStream("/sprites/sphere_diffuse_map.png"));
-            val mat:PhongMaterial=PhongMaterial(Color(1.0,1.0,1.0,0.1));
+            val mat:PhongMaterial=PhongMaterial(Color(0.4,0.4,0.4,0.1));
             mat.diffuseMap=diffuseMap;
             mat.specularColor=Color.TRANSPARENT;
             it.material=mat;
@@ -42,10 +46,6 @@ class SphereView(var subScene:SubScene) {
             it.blendMode=BlendMode.MULTIPLY;
         }
 
-        val line:Line3D= Line3D(Point3D(0.0,0.0,0.0), Point3D(-1.0,-2.0,0.0),0.2);
-        line.phonkMaterial.diffuseColor=Color.RED;
-        line.blendMode=BlendMode.MULTIPLY;
-        line.transforms.add(0,Translate(0.0,0.0,0.0));
 
         camera = PerspectiveCamera(true);
         camera.apply {
@@ -64,8 +64,8 @@ class SphereView(var subScene:SubScene) {
             rootGroup=subScene.root as Group;
 
             rootGroup.children.add(light);
-            rootGroup.children.add(line);
             rootGroup.children.add(sphere);
+            initAxes(rootGroup);
 
             subScene.camera=camera;
 
@@ -100,6 +100,65 @@ class SphereView(var subScene:SubScene) {
         importer.clear();
         importer.read(this.javaClass.getResource("/models/sphere_grid.sugus"));
         return importer.import[0];
+    }
+
+    private fun initAxes(root:Group)
+    {
+        //javafx x: x
+        //javafx y: -z
+        //javafx z: y
+
+        axes=Array<Axis?>(3) { _ -> null };
+        val importer:ObjModelImporter= ObjModelImporter();
+
+        //x axis
+        importer.clear();
+        importer.read(this.javaClass.getResource("/models/cone.sugus"));
+        val xAxisLine3D=Line3D(Point3D(-1.1,0.0,0.0),Point3D(1.1,0.0,0.0),0.01);
+        xAxisLine3D.phonkMaterial.diffuseColor=Color.RED;
+        root.children.add(xAxisLine3D);
+
+        val xAxisCone:MeshView=importer.import[0];
+        xAxisCone.transforms.add(Rotate(90.0,Point3D(0.0,0.0,1.0)));
+        xAxisCone.transforms.add(Translate(0.0,-1.1,0.0));
+        xAxisCone.transforms.add(Scale(0.03,0.03,0.03));
+        xAxisCone.material=PhongMaterial(Color.RED);
+        root.children.add(xAxisCone);
+
+        axes[0]=Axis(xAxisLine3D,xAxisCone);
+
+        //y axis
+        importer.clear();
+        importer.read(this.javaClass.getResource("/models/cone.sugus"));
+        val yAxisLine3D=Line3D(Point3D(0.0,0.0,-1.1),Point3D(0.0,0.0,1.1),0.01);
+        yAxisLine3D.phonkMaterial.diffuseColor=Color(0.0,1.0,0.0,1.0);
+        root.children.add(yAxisLine3D);
+
+        val yAxisCone:MeshView=importer.import[0];
+        yAxisCone.transforms.add(Rotate(-90.0,Point3D(1.0,0.0,0.0)));
+        yAxisCone.transforms.add(Translate(0.0,-1.1,0.0));
+        yAxisCone.transforms.add(Scale(0.03,0.03,0.03));
+        yAxisCone.material=PhongMaterial(Color(0.0,1.0,0.0,1.0));
+        root.children.add(yAxisCone);
+
+        axes[1]=Axis(yAxisLine3D,yAxisCone);
+
+        //z axis
+        importer.clear();
+        importer.read(this.javaClass.getResource("/models/cone.sugus"));
+        val zAxisLine3D=Line3D(Point3D(0.0,-1.1,0.0),Point3D(0.0,1.1,0.0),0.01);
+        zAxisLine3D.phonkMaterial.diffuseColor=Color(0.0,0.0,1.0,1.0);
+        root.children.add(zAxisLine3D);
+
+        val zAxisCone:MeshView=importer.import[0];
+        zAxisCone.transforms.add(Translate(0.0,-1.1,0.0));
+        zAxisCone.transforms.add(Scale(0.03,0.03,0.03));
+        zAxisCone.material=PhongMaterial(Color(0.0,0.0,1.0,1.0));
+        root.children.add(zAxisCone);
+
+        axes[2]=Axis(zAxisLine3D,zAxisCone);
+
+        importer.close();
     }
 
 

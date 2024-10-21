@@ -66,7 +66,7 @@ class Line3D(var start:Point3D,var end:Point3D, var width:Double) : Cylinder() {
         }while(false);
 
         val length:Double=Point3D(end.x-start.x,end.y-start.y,end.z-start.z).magnitude();
-        transforms.add(Translate(start.x,start.y,start.z));
+        transforms.add(Translate(start.x,-start.y,start.z));
         transforms.add(Rotate(hRot,Point3D(0.0,1.0,0.0)));
         transforms.add(Rotate(vRot,Point3D(1.0,0.0,0.0)));
         transforms.add(Translate(0.0,-length*0.5,0.0));
