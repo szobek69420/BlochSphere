@@ -18,13 +18,16 @@ data class Complex(var rl: Float, var img: Float)
 
     fun phase(): Float
     {
-        var temp:Float=atan2(img,rl);
-        if(rl<0)
+        var temp:Float=0.0f;
+        if(rl>0)
         {
-            if(img<0)
-                temp+= PI.toFloat();
-            else
-                temp-=PI.toFloat();
+            temp=atan2(img,rl);
+        }
+        else
+        {
+            temp=atan2(-img,-rl)+PI.toFloat();
+            if(temp>PI.toFloat())
+                temp-=2.0f*PI.toFloat();
         }
         return temp;
     }

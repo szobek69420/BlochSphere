@@ -15,10 +15,51 @@ import javafx.scene.transform.Rotate
 import javafx.scene.transform.Scale
 import javafx.scene.transform.Translate
 import main.kotlin.elements.Line3D
+import main.kotlin.maths.Complex
+import main.kotlin.quantum.Qubit
+import kotlin.math.atan2
 
 
 class SphereView(var subScene:SubScene) {
+    private data class Axis(val line:Line3D, val cone:MeshView)
+
+    private class QubitArrow() : Group()
+    {
+        private lateinit var line:Line3D;
+        private lateinit var cone:MeshView;
+
+        init{
+            try{
+                line=Line3D(Point3D(0.0,0.0,0.0),Point3D(0.0,0.9,0.0),0.01);
+                line.apply {
+                    val mat:PhongMaterial=PhongMaterial(Color.WHITE);
+                    material=mat;
+                }
+
+                val importer:ObjModelImporter=ObjModelImporter();
+                importer.read(this.javaClass.getResource("/models/cone.sugus"));
+                cone=importer.import[0];
+                cone.apply {
+                    transforms.add(Translate(0.0,-0.9,0.0));
+                    transforms.add(Scale(0.03,0.03,0.03));
+
+                    val mat:PhongMaterial=PhongMaterial(Color.WHITE);
+                    material=mat;
+                }
+
+                children.addAll(cone,line);
+            }
+            catch(e:Exception)
+            {
+                System.err.println("SphereView.QubitArrow: fuck\n${e.message}");
+            }
+        }
+    }
+
+    var value:Qubit=Qubit(Complex(0.7071f,0.0f),Complex(0.5f,-0.5f));
+
     private var sphere: MeshView;
+    private var arrow:QubitArrow;
     private var light: LightBase;
     private lateinit var axes:Array<Axis?>;
 
@@ -26,8 +67,6 @@ class SphereView(var subScene:SubScene) {
     private var cameraHRot:Double=-145.0;
     private var cameraVRot:Double=-30.0;
     private var cameraDistance:Double=10.0;
-
-    private data class Axis(val line:Line3D, val cone:MeshView)
 
     init{
         val importer:ObjModelImporter=ObjModelImporter();
@@ -46,6 +85,8 @@ class SphereView(var subScene:SubScene) {
             it.blendMode=BlendMode.MULTIPLY;
         }
 
+        arrow= QubitArrow();
+        refreshValueView();
 
         camera = PerspectiveCamera(true);
         camera.apply {
@@ -65,6 +106,7 @@ class SphereView(var subScene:SubScene) {
 
             rootGroup.children.add(light);
             rootGroup.children.add(sphere);
+            rootGroup.children.add(arrow);
             initAxes(rootGroup);
 
             subScene.camera=camera;
@@ -93,6 +135,16 @@ class SphereView(var subScene:SubScene) {
         camera.transforms.add(rotationHorizontal);
         camera.transforms.add(rotationVertical);
         camera.transforms.add(translation);
+    }
+
+    private fun refreshValueView()
+    {
+        val polar:Double=2.0*Math.toDegrees(atan2(value.b.length().toDouble(),value.a.length().toDouble()));
+        val azimuth:Double=Math.toDegrees(value.b.phase().toDouble()-value.a.phase().toDouble());
+
+        arrow.transforms.clear();
+        arrow.transforms.add(Rotate(azimuth,Point3D(0.0,-1.0,0.0)));
+        arrow.transforms.add(Rotate(polar,Point3D(0.0,0.0,1.0)));
     }
 
     private fun importSphere(importer:ObjModelImporter):MeshView
