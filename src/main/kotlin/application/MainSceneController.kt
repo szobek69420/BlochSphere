@@ -44,13 +44,15 @@ class MainSceneController {
 
         sphereContainer.children.add(sphereSubScene);
 
-        sphereView= SphereView(sphereSubScene);
+        sphereView= SphereView(sphereSubScene, sphereContainer);
 
         //resize children as well
         sphereContainer.layoutBoundsProperty().addListener() { _, oldValue, newValue ->
             if (oldValue.width != newValue.width || oldValue.height != newValue.height) {
                 sphereSubScene.width=newValue.width;
                 sphereSubScene.height=newValue.height;
+
+                sphereView.onResize();
             }
         }
 

@@ -4,13 +4,17 @@ import com.interactivemesh.jfx.importer.obj.ObjModelImporter
 import javafx.event.EventHandler
 import javafx.geometry.Point3D
 import javafx.scene.*
+import javafx.scene.control.Label
 import javafx.scene.effect.BlendMode
 import javafx.scene.image.Image
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
+import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
 import javafx.scene.paint.PhongMaterial
 import javafx.scene.shape.MeshView
+import javafx.scene.shape.Sphere
 import javafx.scene.transform.Rotate
 import javafx.scene.transform.Scale
 import javafx.scene.transform.Translate
@@ -20,53 +24,102 @@ import main.kotlin.quantum.Qubit
 import kotlin.math.atan2
 
 
-class SphereView(var subScene:SubScene) {
+//if you want the view to work fully, the given subscene must be a child of an anchorpane
+class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
     private data class Axis(val line:Line3D, val cone:MeshView)
 
     private class QubitArrow() : Group()
     {
-        private lateinit var line:Line3D;
-        private lateinit var cone:MeshView;
+        private var line:Line3D;
+        private var cone:Sphere;
 
         init{
-            try{
-                line=Line3D(Point3D(0.0,0.0,0.0),Point3D(0.0,0.9,0.0),0.01);
-                line.apply {
-                    val mat:PhongMaterial=PhongMaterial(Color.WHITE);
-                    material=mat;
-                }
-
-                val importer:ObjModelImporter=ObjModelImporter();
-                importer.read(this.javaClass.getResource("/models/cone.sugus"));
-                cone=importer.import[0];
-                cone.apply {
-                    transforms.add(Translate(0.0,-0.9,0.0));
-                    transforms.add(Scale(0.03,0.03,0.03));
-
-                    val mat:PhongMaterial=PhongMaterial(Color.WHITE);
-                    material=mat;
-                }
-
-                children.addAll(cone,line);
+            line=Line3D(Point3D(0.0,0.0,0.0),Point3D(0.0,1.0,0.0),0.01);
+            line.apply {
+                val mat:PhongMaterial=PhongMaterial(Color.WHITE);
+                material=mat;
             }
-            catch(e:Exception)
-            {
-                System.err.println("SphereView.QubitArrow: fuck\n${e.message}");
+
+            cone=Sphere();
+            cone.apply {
+                transforms.add(Translate(0.0,-1.0,0.0));
+                transforms.add(Scale(0.03,0.03,0.03));
+
+                val mat:PhongMaterial=PhongMaterial(Color.WHITE);
+                material=mat;
             }
+
+            children.addAll(cone,line);
         }
     }
 
-    var value:Qubit=Qubit(Complex(0.7071f,0.0f),Complex(0.5f,-0.5f));
+    private class QubitInfoDisplay(val subScene: SubScene):AnchorPane()
+    {
+        private val alpha:Label=Label();
+        private val beta:Label=Label();
+        private val polar:Label=Label();
+        private val azimuth:Label=Label();
+
+        init{
+            if(subScene.root is Group)
+            {
+                refreshDisplay(Qubit(Complex(1.0f,0.0f), Complex(0.0f,0.0f)));
+
+                this.children.addAll(alpha,beta, polar, azimuth);
+
+                for(label in arrayOf(alpha,beta,polar,azimuth))
+                {
+                    label.style="-fx-font-size: 18px;";
+                    label.textFill=Color.WHITE;
+                }
+
+                refreshDisplay(Qubit(Complex(1.0f), Complex(0.0f)));
+                onResize();
+            }
+        }
+
+        fun refreshDisplay(value:Qubit)
+        {
+            val polar:Double=2.0*Math.toDegrees(atan2(value.b.length().toDouble(),value.a.length().toDouble()));
+            val azimuth:Double=Math.toDegrees(value.b.phase().toDouble()-value.a.phase().toDouble());
+
+
+            alpha.text=String.format("Alpha: %.2f%s%.2fj",value.a.rl, if (value.a.img>=0.0f) "+" else "", value.a.img);
+            beta.text=String.format("Beta:  %.2f%s%.2fj",value.b.rl, if (value.b.img>=0.0f) "+" else "", value.b.img);
+
+            this.polar.text= String.format("Polar:   %.2f°",polar);
+            this.azimuth.text=String.format("Azimuth: %.2f°",azimuth);
+        }
+
+        fun onResize()
+        {
+            this.width=subScene.width;
+            this.height=subScene.height;
+
+            alpha.translateX=10.0;
+            alpha.translateY=this.height-55.0;
+            beta.translateX=10.0;
+            beta.translateY=this.height-30.0;
+
+            polar.translateX=250.0;
+            polar.translateY=this.height-55.0;
+            azimuth.translateX=250.0;
+            azimuth.translateY=this.height-30.0;
+        }
+    }
+
+    private var value:Qubit=Qubit(Complex(0.7071f,0.0f),Complex(0.5f,-0.5f));
 
     private var sphere: MeshView;
     private var arrow:QubitArrow;
     private var light: LightBase;
     private lateinit var axes:Array<Axis?>;
+    private var qubitInfo:QubitInfoDisplay;
 
     private var camera: PerspectiveCamera;
     private var cameraHRot:Double=-145.0;
     private var cameraVRot:Double=-30.0;
-    private var cameraDistance:Double=10.0;
+    private var cameraDistance:Double=5.0;
 
     init{
         val importer:ObjModelImporter=ObjModelImporter();
@@ -76,9 +129,7 @@ class SphereView(var subScene:SubScene) {
             it.transforms.clear();
             it.transforms.addAll(Translate(0.0,0.0,0.0));
 
-            val diffuseMap:Image= Image(this.javaClass.getResourceAsStream("/sprites/sphere_diffuse_map.png"));
             val mat:PhongMaterial=PhongMaterial(Color(0.4,0.4,0.4,0.1));
-            mat.diffuseMap=diffuseMap;
             mat.specularColor=Color.TRANSPARENT;
             it.material=mat;
 
@@ -99,6 +150,9 @@ class SphereView(var subScene:SubScene) {
 
         light = AmbientLight();
 
+        qubitInfo= QubitInfoDisplay(subScene);
+        qubitInfo.refreshDisplay(value);
+
         var rootGroup:Group;
         if(subScene.root is Group)
         {
@@ -109,7 +163,11 @@ class SphereView(var subScene:SubScene) {
             rootGroup.children.add(arrow);
             initAxes(rootGroup);
 
+            subSceneParent.children.add(qubitInfo);
+
             subScene.camera=camera;
+
+            onResize();
 
             val mouseHandler:SphereViewMouseHandler= SphereViewMouseHandler(this);
             this.subScene.onMousePressed=mouseHandler;
@@ -147,10 +205,22 @@ class SphereView(var subScene:SubScene) {
         arrow.transforms.add(Rotate(polar,Point3D(0.0,0.0,1.0)));
     }
 
+    fun setValue(value:Qubit)
+    {
+        this.value=value;
+        refreshValueView();
+        qubitInfo.refreshDisplay(value);
+    }
+
+    fun onResize()
+    {
+        qubitInfo.onResize();
+    }
+
     private fun importSphere(importer:ObjModelImporter):MeshView
     {
         importer.clear();
-        importer.read(this.javaClass.getResource("/models/sphere_grid.sugus"));
+        importer.read(this.javaClass.getResource("/models/sphere_grid.exe"));
         return importer.import[0];
     }
 
@@ -165,7 +235,7 @@ class SphereView(var subScene:SubScene) {
 
         //x axis
         importer.clear();
-        importer.read(this.javaClass.getResource("/models/cone.sugus"));
+        importer.read(this.javaClass.getResource("/models/cone.exe"));
         val xAxisLine3D=Line3D(Point3D(-1.1,0.0,0.0),Point3D(1.1,0.0,0.0),0.01);
         xAxisLine3D.phonkMaterial.diffuseColor=Color.RED;
         root.children.add(xAxisLine3D);
@@ -181,7 +251,7 @@ class SphereView(var subScene:SubScene) {
 
         //y axis
         importer.clear();
-        importer.read(this.javaClass.getResource("/models/cone.sugus"));
+        importer.read(this.javaClass.getResource("/models/cone.exe"));
         val yAxisLine3D=Line3D(Point3D(0.0,0.0,-1.1),Point3D(0.0,0.0,1.1),0.01);
         yAxisLine3D.phonkMaterial.diffuseColor=Color(0.0,1.0,0.0,1.0);
         root.children.add(yAxisLine3D);
@@ -197,7 +267,7 @@ class SphereView(var subScene:SubScene) {
 
         //z axis
         importer.clear();
-        importer.read(this.javaClass.getResource("/models/cone.sugus"));
+        importer.read(this.javaClass.getResource("/models/cone.exe"));
         val zAxisLine3D=Line3D(Point3D(0.0,-1.1,0.0),Point3D(0.0,1.1,0.0),0.01);
         zAxisLine3D.phonkMaterial.diffuseColor=Color(0.0,0.0,1.0,1.0);
         root.children.add(zAxisLine3D);
