@@ -54,5 +54,7 @@ class Window() : Application() {
         controller.initScene();
 
         stage.show();
+
+        stage.width+=1.0;//to trigger a layout reload, so that the circuit renders properly
     }
 }

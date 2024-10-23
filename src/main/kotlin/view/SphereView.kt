@@ -93,8 +93,11 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
 
         fun onResize()
         {
-            this.width=subScene.width;
-            this.height=subScene.height;
+            this.translateX=0.0;
+            this.translateY=subScene.height-60.0;
+
+            this.width=500.0;
+            this.height=60.0;
 
             alpha.translateX=10.0;
             alpha.translateY=this.height-55.0;

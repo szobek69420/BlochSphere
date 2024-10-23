@@ -6,21 +6,41 @@ import javafx.scene.Group
 import javafx.scene.SceneAntialiasing
 import javafx.scene.SubScene
 import javafx.scene.control.MenuBar
+import javafx.scene.control.ScrollPane
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
+import javafx.stage.Stage
 import main.kotlin.elements.BetterButton
+import main.kotlin.elements.ResizableAnchorPane
+import main.kotlin.view.CircuitView
 import main.kotlin.view.SphereView
+import java.lang.Exception
 
 
 class MainSceneController {
+
+    @FXML
+    lateinit var root:AnchorPane;
+
     @FXML
     lateinit var sphereContainer: AnchorPane;
+
+
+    @FXML
+    lateinit var circuitContainer:AnchorPane;
+    @FXML
+    lateinit var operationContainer:FlowPane;
+
+
 
 
     lateinit var sphereSubScene: SubScene;
     lateinit var objectParent:Group;
 
     lateinit var sphereView:SphereView;
+
+    lateinit var circuitView:CircuitView;
 
     lateinit var exitButton:BetterButton;//ide kell a lateinit
     lateinit var rescaleButton:BetterButton;
@@ -48,5 +68,8 @@ class MainSceneController {
             }
         }
 
+        //circuitview
+        circuitContainer.maxHeight=200.0;
+        circuitView= CircuitView(circuitContainer,operationContainer,root);
     }
 }
