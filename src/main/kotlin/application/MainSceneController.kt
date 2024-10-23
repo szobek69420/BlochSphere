@@ -16,11 +16,6 @@ class MainSceneController {
     @FXML
     lateinit var sphereContainer: AnchorPane;
 
-    @FXML
-    lateinit var menuContainer:HBox;
-    @FXML
-    lateinit var menuBar:MenuBar;
-
 
     lateinit var sphereSubScene: SubScene;
     lateinit var objectParent:Group;
@@ -34,9 +29,6 @@ class MainSceneController {
     fun initScene()
     {
         sphereContainer.children.clear();
-
-        addButtons();
-        menuBar.background= Background(BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY))
 
         objectParent=Group();
         sphereSubScene = SubScene(objectParent, sphereContainer.width, sphereContainer.width, true, SceneAntialiasing.BALANCED);
@@ -56,58 +48,5 @@ class MainSceneController {
             }
         }
 
-    }
-
-    fun closeWindow()
-    {
-        Window.mainWindow?.closeApplication();
-    }
-
-    fun minimizeWindow()
-    {
-        Window.mainWindow?.minimizeApplication();
-    }
-
-    fun rescaleWindow()
-    {
-        Window.mainWindow?.rescaleApplication();
-    }
-
-    fun changeRescaleImage(isMaximized:Boolean)
-    {
-        if(isMaximized)
-            rescaleButton.changeImage("/sprites/rescale2.png");
-        else
-            rescaleButton.changeImage("/sprites/rescale1.png");
-    }
-
-    private fun addButtons()
-    {
-        minimizeButton = BetterButton();
-        minimizeButton.callback= {minimizeWindow();};
-        minimizeButton.minWidth=30.0;
-        minimizeButton.minHeight=menuContainer.height;
-        minimizeButton.changeColours(Color.TRANSPARENT,Color.AZURE,Color.AZURE);
-        minimizeButton.changeImage("/sprites/minimize.png");
-        HBox.setHgrow(minimizeButton,Priority.NEVER);
-        menuContainer.children.add(minimizeButton);
-
-        rescaleButton = BetterButton();
-        rescaleButton.callback= {rescaleWindow();};
-        rescaleButton.minWidth=30.0;
-        rescaleButton.minHeight=menuContainer.height;
-        rescaleButton.changeColours(Color.TRANSPARENT,Color.DEEPSKYBLUE,Color.DEEPSKYBLUE);
-        rescaleButton.changeImage("/sprites/rescale1.png");
-        HBox.setHgrow(rescaleButton,Priority.NEVER);
-        menuContainer.children.add(rescaleButton);
-
-        exitButton = BetterButton();
-        exitButton.callback= {closeWindow();};
-        exitButton.minWidth=30.0;
-        exitButton.minHeight=menuContainer.height;
-        exitButton.changeColours(Color.TRANSPARENT,Color.RED,Color.RED);
-        exitButton.changeImage("/sprites/x.png");
-        HBox.setHgrow(exitButton,Priority.NEVER);
-        menuContainer.children.add(exitButton);
     }
 }
