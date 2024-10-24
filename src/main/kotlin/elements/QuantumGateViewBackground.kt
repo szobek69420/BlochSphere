@@ -5,7 +5,7 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 
-class QuantumGateViewBackground(val index:Int, private val _height:Double):Rectangle(75.0,_height) {
+class QuantumGateViewBackground(val index:Int, private val _height:Double):Rectangle(QuantumGateView.SCALE+25.0,_height) {
     init {
         fill= Color.BLUEVIOLET;
     }

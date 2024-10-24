@@ -16,10 +16,11 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
     //drag data
     private var inDrag:Boolean=false;
     private var draggedText:String="TEMP";//the temporary value, that is automatically removed from the circuit on rerender if there is no drag in progress
-    private var fromCircuit:Boolean=false;
+    private var startIndex:Int=-1;//the original index of the grabbed gate, -1 if it is not from the circuit
     private var targetIndex:Int=-1;
 
-    private var asdf:QuantumGateViewBackground?=null;
+    private var selectedComponent:QuantumGateView?=null;//if a gate is selected in the circuit, then it doesn't destroy the grabbed node, so that the mouseevent lives on
+    private var draggedGate:QuantumGateView?=null;//the very useless gate that will be shown besides the mouse
 
     init{
         gatesInCircuit.add("sus");
@@ -41,13 +42,32 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
 
         for(gate in gates)
         {
-            operationContainer.children.add(QuantumGateView(gate,Color.YELLOW,false,{t,c,e->onQuantumGateGrab(t,c,e);}, {t,e->onQuantumGateDrag(t,e);}));
+            operationContainer.children.add(QuantumGateView(gate,-1, Color.YELLOW,{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);}));
         }
     }
 
     fun renderCircuit()
     {
-        circuitContainer.children.clear();
+        if(selectedComponent==null)
+            circuitContainer.children.clear();
+        else
+        {
+            var i:Int=0;
+            while(circuitContainer.children.size>i)
+            {
+                if(circuitContainer.children[i]===selectedComponent)
+                {
+                    i++;
+                    continue;
+                }
+
+                circuitContainer.children.removeAt(i);
+            }
+        }
+
+
+        if(inDrag&&targetIndex!=-1)
+            gatesInCircuit.add(targetIndex,"TEMP");
 
         var offset=10.0;
         var index:Int=0;
@@ -60,45 +80,74 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
             AnchorPane.setBottomAnchor(bg,0.0);
 
             //add gate
-            val gate:QuantumGateView=QuantumGateView(bill, Color.YELLOW,true,{t,c,e->onQuantumGateGrab(t,c,e);}, {t,e->onQuantumGateDrag(t,e);});
+            var colour:Color=Color.YELLOW;
+            if(bill=="TEMP")
+                colour=Color.DEEPSKYBLUE;
+            var text=if(bill=="TEMP")"" else bill;
+
+            val gate:QuantumGateView=QuantumGateView(text, index, colour,{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);});
             circuitContainer.children.add(gate);
             AnchorPane.setLeftAnchor(gate,offset+12.5);
-            AnchorPane.setBottomAnchor(gate,0.5*(circuitContainer.height-gate.height));
+            AnchorPane.setBottomAnchor(gate,0.5*(circuitContainer.height-QuantumGateView.SCALE));
 
-            offset+=75.0;
+
+            offset+=QuantumGateView.SCALE+25.0;
             index++;
         }
 
-        asdf=circuitContainer.children[0] as QuantumGateViewBackground;
+
+        if(inDrag&&targetIndex!=-1)
+            gatesInCircuit.removeAt(targetIndex);
     }
 
-    private fun onQuantumGateGrab(text:String,inCircuit:Boolean,event:MouseEvent)
+    private fun onQuantumGateGrab(text:String,index:Int,event:MouseEvent)
     {
-        if(fromCircuit==true)
-            return;
-
+        println(index);
         when(event.eventType)
         {
             MouseEvent.MOUSE_PRESSED->{
                 targetIndex=-1;
-                fromCircuit=inCircuit;
+                startIndex=index;
                 draggedText=text;
                 inDrag=true;
+
+                if(startIndex!=-1)
+                {
+                    gatesInCircuit.removeAt(startIndex);
+
+                    //set dragged object
+                    for(c in circuitContainer.children)
+                    {
+                        if(c is QuantumGateView&&(c as QuantumGateView).index==startIndex)
+                        {
+                            selectedComponent=c;
+                            c.opacity=0.0;
+                        }
+                    }
+                }
+
+                draggedGate= QuantumGateView(draggedText,-1,Color.YELLOW,{ _, _, _->;},{ _, _->;});
+                overlay.children.add(draggedGate);
+
+                onQuantumGateDrag(text,event);//to refresh the targetIndex
+                renderCircuit();
             }
 
             MouseEvent.MOUSE_RELEASED->{
-                if(!fromCircuit)
+                inDrag=false;
+                selectedComponent=null;
+
+                if(targetIndex!=-1)
                 {
-                    if(targetIndex!=-1)
-                    {
-                        gatesInCircuit.add(targetIndex,draggedText);
-                        renderCircuit();
-                    }
+                    gatesInCircuit.add(targetIndex,draggedText);
+                    renderCircuit();
                 }
 
                 targetIndex=-1;
                 draggedText="TEMP";
-                inDrag=false;
+
+                overlay.children.remove(draggedGate);
+                draggedGate=null;
             }
         }
     }
@@ -107,6 +156,14 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
     {
         if(!inDrag)//habar ez valszeg nem fordul elo
             return;
+
+        if(draggedGate!=null)
+        {
+            draggedGate!!.layoutX = event.sceneX-0.5*QuantumGateView.SCALE;
+            draggedGate!!.layoutY=event.sceneY-0.5*QuantumGateView.SCALE;
+        }
+
+        val prevTargetIndex=targetIndex;
 
         targetIndex=-1;
         for(node: Node in circuitContainer.children)
@@ -124,13 +181,19 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
 
         if(targetIndex==-1)
         {
-            if(event.sceneX>circuitContainer.layoutBounds.minX
-                &&event.sceneX<circuitContainer.layoutBounds.maxX
-                &&event.sceneY>circuitContainer.layoutBounds.minY
-                &&event.sceneY<circuitContainer.layoutBounds.maxY)
+            if(event.sceneX<circuitContainer.layoutBounds.minX
+                ||event.sceneX>circuitContainer.layoutBounds.maxX
+                ||event.sceneY<circuitContainer.layoutBounds.minY
+                ||event.sceneY>circuitContainer.layoutBounds.maxY)//outside of the circuitcontainer
             {
-                targetIndex=gatesInCircuit.size;
+                targetIndex=-1;
             }
+            else
+                targetIndex=gatesInCircuit.size;
         }
+
+
+        if(targetIndex!=prevTargetIndex)
+            renderCircuit();
     }
 }
