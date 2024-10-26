@@ -12,7 +12,7 @@ import main.kotlin.quantum.Qubit
 
 
 
-class QuantumBitValueAdjuster(val valueReference:Qubit): Group() {
+class QuantumBitValueAdjuster(private val startValue:Qubit, val onValueChange:(Qubit)->Unit): Group() {
 
     companion object{
         val WIDTH=260.0;
@@ -48,24 +48,28 @@ class QuantumBitValueAdjuster(val valueReference:Qubit): Group() {
 
 
         real1= TextField();
-        real1.text=valueReference.a.rl.toString();
-        real1.initStyle();
+        real1.text=startValue.a.rl.toString();
+        real1.initStyle(false);
         real1.setOrientation(70.0,30.0,65.0,10.0);
+        real1.textProperty().addListener(){_,_,_-> convertUserInput()};
 
         img1=TextField();
-        img1.text=valueReference.a.img.toString();
-        img1.initStyle();
+        img1.text=startValue.a.img.toString();
+        img1.initStyle(false);
         img1.setOrientation(70.0,30.0,160.0,10.0);
+        img1.textProperty().addListener(){_,_,_-> convertUserInput()};
 
         real2= TextField();
-        real2.text=valueReference.b.rl.toString();
-        real2.initStyle();
+        real2.text=startValue.b.rl.toString();
+        real2.initStyle(false);
         real2.setOrientation(70.0,30.0,65.0,50.0);
+        real2.textProperty().addListener(){_,_,_-> convertUserInput()};
 
         img2=TextField();
-        img2.text=valueReference.b.img.toString();
-        img2.initStyle();
+        img2.text=startValue.b.img.toString();
+        img2.initStyle(false);
         img2.setOrientation(70.0,30.0,160.0,50.0);
+        img2.textProperty().addListener(){_,_,_-> convertUserInput()};
 
 
         cat0= ImageView(cat0Image);
@@ -131,18 +135,66 @@ class QuantumBitValueAdjuster(val valueReference:Qubit): Group() {
         this.translateY=offsetY;
     }
 
-    private fun TextField.initStyle()
+    private fun TextField.initStyle(error:Boolean)
     {
+        val colour=if(error) "red" else "white";
+
         val textFieldStyle="""
             -fx-font-size: 22px; 
             -fx-padding: 3px;
             -fx-text-alignment:right; 
             -fx-background-color: transparent;
-            -fx-border-color: white;
+            -fx-border-color: ${colour};
             -fx-border-width: 3px;
             -fx-border-radius: 10px;
-            -fx-text-fill: white;""".trimIndent()
+            -fx-text-fill: ${colour};""".trimIndent()
         this.style=textFieldStyle;
         this.alignment=Pos.CENTER_RIGHT;
+    }
+
+    private fun convertUserInput() {
+        val value:Qubit=Qubit(Complex(0.0f),Complex(0.0f));
+
+        try{
+            value.a.rl=real1.text.toFloat();
+            real1.initStyle(false);
+        }
+        catch(ex:Exception)
+        {
+            value.a.rl=0.0f;
+            real1.initStyle(true);
+        }
+
+        try{
+            value.a.img=img1.text.toFloat();
+            img1.initStyle(false);
+        }
+        catch(ex:Exception)
+        {
+            value.a.img=0.0f;
+            img1.initStyle(true);
+        }
+
+        try{
+            value.b.rl=real2.text.toFloat();
+            real2.initStyle(false);
+        }
+        catch(ex:Exception)
+        {
+            value.b.rl=0.0f;
+            real2.initStyle(true);
+        }
+
+        try{
+            value.b.img=img2.text.toFloat();
+            img2.initStyle(false);
+        }
+        catch(ex:Exception)
+        {
+            value.b.img=0.0f;
+            img2.initStyle(true);
+        }
+
+        onValueChange(value);
     }
 }

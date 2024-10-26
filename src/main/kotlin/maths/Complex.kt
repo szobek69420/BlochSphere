@@ -68,6 +68,12 @@ data class Complex(var rl: Float, var img: Float)
         img=(img*other.rl-rl*other.img)/(other.rl*other.rl+other.img*other.img);
     }
 
+    operator fun divAssign(other:Float)
+    {
+        rl/=other;
+        img/=other;
+    }
+
     operator fun plus(other: Complex):Complex
     {
         return Complex(rl+other.rl,img+other.img);

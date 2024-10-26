@@ -11,14 +11,19 @@ import main.kotlin.elements.QuantumGateView
 import main.kotlin.elements.QuantumGateViewBackground
 import main.kotlin.elements.ResizableAnchorPane
 import main.kotlin.maths.Complex
+import main.kotlin.maths.Matrix
 import main.kotlin.quantum.Qubit
 
-class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPane, val overlay:AnchorPane) {
+class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPane, val overlay:AnchorPane, val onValueChange:(Qubit)->Unit) {
     private val gatesInCircuit:ArrayList<String> = ArrayList<String>();
 
     private val value:Qubit=Qubit(Complex(1.0f),Complex(0.0f));
 
-    private val valueAdjuster:QuantumBitValueAdjuster= QuantumBitValueAdjuster(value);
+    private val valueAdjuster:QuantumBitValueAdjuster= QuantumBitValueAdjuster(value){value->
+        this.value.a=value.a;
+        this.value.b=value.b;
+        calculateValue();
+    };
 
     //drag data
     private var inDrag:Boolean=false;
@@ -30,9 +35,6 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
     private var draggedGate:QuantumGateView?=null;//the very useless gate that will be shown besides the mouse
 
     init{
-        gatesInCircuit.add("sus");
-        gatesInCircuit.add("amogus");
-
         circuitContainer.layoutBoundsProperty().addListener(){_,oldValue,newValue->
             if(oldValue.height!=newValue.height)
                 renderCircuit();
@@ -115,7 +117,6 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
 
     private fun onQuantumGateGrab(text:String,index:Int,event:MouseEvent)
     {
-        println(index);
         when(event.eventType)
         {
             MouseEvent.MOUSE_PRESSED->{
@@ -161,6 +162,8 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
 
                 overlay.children.remove(draggedGate);
                 draggedGate=null;
+
+                calculateValue();
             }
         }
     }
@@ -208,5 +211,50 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
 
         if(targetIndex!=prevTargetIndex)
             renderCircuit();
+    }
+
+    private fun calculateValue()
+    {
+        var value=this.value.copy();
+
+        for(gate in gatesInCircuit)
+        {
+            value=createGateMatrix(gate)*value;
+        }
+
+        onValueChange(value);
+    }
+
+    private fun createGateMatrix(gate:String):Matrix
+    {
+        val gateType:String=gate.substringBefore('|');
+        val mat=Matrix(2);
+        when(gateType)
+        {
+            "X"->{
+                mat[1,0].rl=1.0f;
+                mat[0,1].rl=1.0f;
+            }
+            "Y"->{
+                mat[1,0].img=1.0f;
+                mat[0,1].img=-1.0f;
+            }
+            "Z"->{
+                mat[0,0].rl=1.0f;
+                mat[1,1].rl=-1.0f;
+            }
+            "H"->{
+                mat[0,0].rl=0.7071068f;
+                mat[0,1].rl=0.7071068f;
+                mat[1,0].rl=0.7071068f;
+                mat[1,1].rl=-0.7071068f;
+            }
+            else->{
+                mat[0,0].rl=1.0f;
+                mat[1,1].rl=1.0f;
+            }
+        }
+
+        return mat;
     }
 }

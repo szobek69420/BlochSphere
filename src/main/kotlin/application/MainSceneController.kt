@@ -14,6 +14,7 @@ import javafx.scene.paint.Color
 import javafx.stage.Stage
 import main.kotlin.elements.BetterButton
 import main.kotlin.elements.ResizableAnchorPane
+import main.kotlin.quantum.Qubit
 import main.kotlin.view.CircuitView
 import main.kotlin.view.SphereView
 import java.lang.Exception
@@ -78,6 +79,11 @@ class MainSceneController {
 
         //circuit view
         circuitContainer.maxHeight=200.0;
-        circuitView= CircuitView(circuitContainer,operationContainer,root);
+        circuitView= CircuitView(circuitContainer,operationContainer,root){q->onCircuitValueChange(q)};
+    }
+
+    private fun onCircuitValueChange(value: Qubit)
+    {
+        sphereView.setValue(value);
     }
 }

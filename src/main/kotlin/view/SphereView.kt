@@ -21,6 +21,7 @@ import javafx.scene.transform.Translate
 import main.kotlin.elements.Line3D
 import main.kotlin.maths.Complex
 import main.kotlin.quantum.Qubit
+import kotlin.math.abs
 import kotlin.math.atan2
 
 
@@ -34,7 +35,7 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
         private var cone:Sphere;
 
         init{
-            line=Line3D(Point3D(0.0,0.0,0.0),Point3D(0.0,1.0,0.0),0.01);
+            line=Line3D(Point3D(0.0,0.0,0.0),Point3D(0.0,1.0,0.0),0.015);
             line.apply {
                 val mat:PhongMaterial=PhongMaterial(Color.WHITE);
                 material=mat;
@@ -63,8 +64,6 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
         init{
             if(subScene.root is Group)
             {
-                refreshDisplay(Qubit(Complex(1.0f,0.0f), Complex(0.0f,0.0f)));
-
                 this.children.addAll(alpha,beta, polar, azimuth);
 
                 for(label in arrayOf(alpha,beta,polar,azimuth))
@@ -111,13 +110,37 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
         }
     }
 
-    private var value:Qubit=Qubit(Complex(0.7071f,0.0f),Complex(0.5f,-0.5f));
+    private class QubitInvalidValueDisplay():AnchorPane(){
+        private val text1:Label;
+
+        init{
+            text1=Label("Invalid values for the qubit");
+            text1.style="-fx-font-size: 12px;";
+            text1.textFill=Color.RED;
+
+            this.children.addAll(text1);
+        }
+
+        fun onResize()
+        {
+            this.translateX=0.0;
+            this.translateY=0.0;
+            this.width=500.0;
+            this.height=60.0;
+
+            text1.translateX=10.0;
+            text1.translateY=10.0;
+        }
+    }
+
+    private var value:Qubit=Qubit(Complex(1.0f,0.0f),Complex(0.0f,0.0f));
 
     private var sphere: MeshView;
     private var arrow:QubitArrow;
     private var light: LightBase;
     private lateinit var axes:Array<Axis?>;
     private var qubitInfo:QubitInfoDisplay;
+    private var qubitError:QubitInvalidValueDisplay;
 
     private var camera: PerspectiveCamera;
     private var cameraHRot:Double=-145.0;
@@ -156,6 +179,9 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
         qubitInfo= QubitInfoDisplay(subScene);
         qubitInfo.refreshDisplay(value);
 
+        qubitError=QubitInvalidValueDisplay();
+        qubitError.isVisible=false;
+
         var rootGroup:Group;
         if(subScene.root is Group)
         {
@@ -167,6 +193,7 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
             initAxes(rootGroup);
 
             subSceneParent.children.add(qubitInfo);
+            subSceneParent.children.add(qubitError);
 
             subScene.camera=camera;
 
@@ -210,14 +237,41 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
 
     fun setValue(value:Qubit)
     {
+        //user input validation
+        var error=false;
+
+        val pa=value.a.length();
+        val pb=value.b.length();
+        val qubitLength=pa*pa+pb*pb;
+
+        if(abs(1.0f-qubitLength)>0.000001f)
+        {
+            error=true;
+            if(abs(pa)<0.000001f&&abs(pb)<0.000001f)
+            {
+                value.a=Complex(1.0f);
+                value.b= Complex(0.0f);
+            }
+            else
+            {
+
+                value.a /= qubitLength;
+                value.b /= qubitLength;
+            }
+        }
+
+
         this.value=value;
         refreshValueView();
         qubitInfo.refreshDisplay(value);
+
+        qubitError.isVisible=error;
     }
 
     fun onResize()
     {
         qubitInfo.onResize();
+        qubitError.onResize();
     }
 
     private fun importSphere(importer:ObjModelImporter):MeshView
