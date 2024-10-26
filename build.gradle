@@ -17,6 +17,7 @@ dependencies {
     implementation 'org.openjfx:javafx-controls:17'
     implementation 'org.openjfx:javafx-fxml:17'
     implementation 'org.openjfx:javafx-graphics:17'
+    implementation 'org.controlsfx:controlsfx:11.1.1'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 

@@ -112,24 +112,34 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
 
     private class QubitInvalidValueDisplay():AnchorPane(){
         private val text1:Label;
+        private val text2:Label;
 
         init{
-            text1=Label("Invalid values for the qubit");
+            text1=Label("Invalid start input");
             text1.style="-fx-font-size: 12px;";
             text1.textFill=Color.RED;
 
-            this.children.addAll(text1);
+            text2=Label("The normalized values are displayed");
+            text2.style="-fx-font-size: 12px;";
+            text2.textFill=Color.RED;
+
+            this.children.addAll(text1,text2);
+
+            onResize();
         }
 
         fun onResize()
         {
             this.translateX=0.0;
             this.translateY=0.0;
-            this.width=500.0;
-            this.height=60.0;
+            this.width=200.0;
+            this.height=30.0;
 
             text1.translateX=10.0;
-            text1.translateY=10.0;
+            text1.translateY=5.0;
+
+            text2.translateX=10.0;
+            text2.translateY=20.0;
         }
     }
 

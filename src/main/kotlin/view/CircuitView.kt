@@ -6,6 +6,7 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.FlowPane
 import javafx.scene.paint.Color
+import javafx.scene.shape.Rectangle
 import main.kotlin.elements.QuantumBitValueAdjuster
 import main.kotlin.elements.QuantumGateView
 import main.kotlin.elements.QuantumGateViewBackground
@@ -14,7 +15,7 @@ import main.kotlin.maths.Complex
 import main.kotlin.maths.Matrix
 import main.kotlin.quantum.Qubit
 
-class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPane, val overlay:AnchorPane, val onValueChange:(Qubit)->Unit) {
+class CircuitView(val circuitContainer:AnchorPane, val normieContainer:FlowPane, val phaseContainer:FlowPane, val overlay:AnchorPane, val onValueChange:(Qubit)->Unit) {
     private val gatesInCircuit:ArrayList<String> = ArrayList<String>();
 
     private val value:Qubit=Qubit(Complex(1.0f),Complex(0.0f));
@@ -30,6 +31,7 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
     private var draggedText:String="TEMP";//the temporary value, that is automatically removed from the circuit on rerender if there is no drag in progress
     private var startIndex:Int=-1;//the original index of the grabbed gate, -1 if it is not from the circuit
     private var targetIndex:Int=-1;
+    private var dragStart:Long=0;
 
     private var selectedComponent:QuantumGateView?=null;//if a gate is selected in the circuit, then it doesn't destroy the grabbed node, so that the mouseevent lives on
     private var draggedGate:QuantumGateView?=null;//the very useless gate that will be shown besides the mouse
@@ -47,12 +49,11 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
 
     private fun fillGateRegistry()
     {
-        val gates=arrayOf("X","Y","Z","H");
+        for(gate in arrayOf("X","Y","Z","H"))
+            normieContainer.children.add(QuantumGateView(gate,-1, Color.YELLOW,{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);}));
 
-        for(gate in gates)
-        {
-            operationContainer.children.add(QuantumGateView(gate,-1, Color.YELLOW,{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);}));
-        }
+        for(gate in arrayOf("S","S_ADJ","T","T_ADJ"))
+            phaseContainer.children.add(QuantumGateView(gate,-1, Color.YELLOW,{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);}));
     }
 
     fun renderCircuit()
@@ -78,12 +79,22 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
         if(inDrag&&targetIndex!=-1)
             gatesInCircuit.add(targetIndex,"TEMP");
 
+        //render wire
+        val wire= Rectangle(QuantumBitValueAdjuster.WIDTH+gatesInCircuit.size*(QuantumGateView.SCALE+25.0)+20.0,5.0);
+        wire.arcWidth=3.0;
+        wire.arcHeight=3.0;
+        wire.fill=Color.WHITE;
+        AnchorPane.setLeftAnchor(wire,10.0);
+        AnchorPane.setBottomAnchor(wire,0.5*(circuitContainer.height-2.5));
+        circuitContainer.children.add(wire);
 
+        //re-add value adjuster
         circuitContainer.children.add(valueAdjuster);
         AnchorPane.setLeftAnchor(valueAdjuster,10.0);
         AnchorPane.setBottomAnchor(valueAdjuster,0.5*(circuitContainer.height-QuantumBitValueAdjuster.HEIGHT));
 
 
+        //add gates
         var offset=QuantumBitValueAdjuster.WIDTH+20.0;
         var index:Int=0;
         for (bill in gatesInCircuit)
@@ -100,7 +111,7 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
                 colour=Color.DEEPSKYBLUE;
             var text=if(bill=="TEMP")"" else bill;
 
-            val gate:QuantumGateView=QuantumGateView(text, index, colour,{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);});
+            val gate:QuantumGateView=QuantumGateView(text.substringBefore('|'), index, colour,{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);});
             circuitContainer.children.add(gate);
             AnchorPane.setLeftAnchor(gate,offset+12.5);
             AnchorPane.setBottomAnchor(gate,0.5*(circuitContainer.height-QuantumGateView.SCALE));
@@ -124,6 +135,7 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
                 startIndex=index;
                 draggedText=text;
                 inDrag=true;
+                dragStart=System.nanoTime();
 
                 if(startIndex!=-1)
                 {
@@ -150,6 +162,9 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
             MouseEvent.MOUSE_RELEASED->{
                 inDrag=false;
                 selectedComponent=null;
+
+                if(targetIndex==-1&&System.nanoTime()-dragStart<100000000)
+                    targetIndex=gatesInCircuit.size;
 
                 if(targetIndex!=-1)
                 {
@@ -243,11 +258,29 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
                 mat[0,0].rl=1.0f;
                 mat[1,1].rl=-1.0f;
             }
-            "H"->{
-                mat[0,0].rl=0.7071068f;
-                mat[0,1].rl=0.7071068f;
-                mat[1,0].rl=0.7071068f;
-                mat[1,1].rl=-0.7071068f;
+            "H"-> {
+                mat[0, 0].rl = 0.7071068f;
+                mat[0, 1].rl = 0.7071068f;
+                mat[1, 0].rl = 0.7071068f;
+                mat[1, 1].rl = -0.7071068f;
+            }
+            "S"->{
+                mat[0,0].rl=1.0f;
+                mat[1,1].img=1.0f;
+            }
+            "S_ADJ"->{
+                mat[0,0].rl=1.0f;
+                mat[1,1].img=-1.0f;
+            }
+            "T"->{
+                mat[0,0].rl = 1.0f;
+                mat[1,1].rl = 0.7071068f;
+                mat[1,1].img = 0.7071068f;
+            }
+            "T_ADJ"->{
+                mat[0,0].rl = 1.0f;
+                mat[1,1].rl = 0.7071068f;
+                mat[1,1].img = -0.7071068f;
             }
             else->{
                 mat[0,0].rl=1.0f;

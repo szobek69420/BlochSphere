@@ -1,0 +1,35 @@
+@font-face {
+    font-family: 'Monocraft';
+    src: url('../fonts/Monocraft.ttf');
+}
+
+#root {
+-fx-font-family: 'Monocraft';
+}
+
+.titled-pane {
+    -fx-background-color: blue;
+}
+
+.titled-pane > .title{
+    -fx-background-color: rgb(50,50,50);
+}
+
+.titled-pane > .title > .text {
+    -fx-fill: rgb(255,209,0);
+}
+
+.titled-pane > .title > .arrow-button .arrow {
+    -fx-background-color: rgb(255,209,0);
+}
+
+.titled-pane > .content{
+    -fx-background-color: black;
+}
+
+.split-pane > .split-pane-divider{
+    -fx-background-color: rgb(50,50,50);
+    -fx-border-color: rgb(255,209,0);
+    -fx-border-radius: 5px;
+    -fx-border-width:  2px;
+}

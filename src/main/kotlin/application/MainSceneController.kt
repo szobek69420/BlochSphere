@@ -8,6 +8,7 @@ import javafx.scene.SubScene
 import javafx.scene.control.Accordion
 import javafx.scene.control.MenuBar
 import javafx.scene.control.ScrollPane
+import javafx.scene.control.TitledPane
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
@@ -35,8 +36,13 @@ class MainSceneController {
     @FXML
     lateinit var circuitContainer:AnchorPane;
     @FXML
-    lateinit var operationContainer:FlowPane;
+    lateinit var normieContainer:FlowPane;
+    @FXML
+    lateinit var phaseContainer:FlowPane;
 
+
+    @FXML
+    lateinit var normieContainerTitlePane:TitledPane;
 
 
 
@@ -79,7 +85,7 @@ class MainSceneController {
 
         //circuit view
         circuitContainer.maxHeight=200.0;
-        circuitView= CircuitView(circuitContainer,operationContainer,root){q->onCircuitValueChange(q)};
+        circuitView= CircuitView(circuitContainer,normieContainer,phaseContainer,root){q->onCircuitValueChange(q)};
     }
 
     private fun onCircuitValueChange(value: Qubit)

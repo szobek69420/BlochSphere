@@ -1,5 +1,7 @@
 package main.kotlin.elements
 
+import javafx.event.ActionEvent
+import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Group
 import javafx.scene.control.TextField
@@ -42,7 +44,7 @@ class QuantumBitValueAdjuster(private val startValue:Qubit, val onValueChange:(Q
         importImages();
 
         background= Rectangle(WIDTH, HEIGHT);
-        background.fill= Color.BLACK;
+        background.fill= Color(0.2,0.2,0.2,1.0);
         background.arcWidth=20.0;
         background.arcHeight=20.0;
 
@@ -137,17 +139,19 @@ class QuantumBitValueAdjuster(private val startValue:Qubit, val onValueChange:(Q
 
     private fun TextField.initStyle(error:Boolean)
     {
-        val colour=if(error) "red" else "white";
+        val r=255;
+        val g=if(error) 0 else 209;
+        val b=0;
 
         val textFieldStyle="""
             -fx-font-size: 22px; 
             -fx-padding: 3px;
             -fx-text-alignment:right; 
             -fx-background-color: transparent;
-            -fx-border-color: ${colour};
+            -fx-border-color: rgb(${r},${g},${b});
             -fx-border-width: 3px;
             -fx-border-radius: 10px;
-            -fx-text-fill: ${colour};""".trimIndent()
+            -fx-text-fill: white;""".trimIndent()
         this.style=textFieldStyle;
         this.alignment=Pos.CENTER_RIGHT;
     }

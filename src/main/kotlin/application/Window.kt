@@ -39,7 +39,7 @@ class Window() : Application() {
 
 
         var scene: Scene=Scene(root);
-        scene.stylesheets.add(this.javaClass.getResource("/stylesheets/font.exe")?.toExternalForm());
+        scene.stylesheets.add(this.javaClass.getResource("/stylesheets/globus.exe")?.toExternalForm());
 
         controller=loader.getController();
 
