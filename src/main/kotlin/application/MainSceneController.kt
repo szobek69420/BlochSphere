@@ -5,6 +5,7 @@ import javafx.geometry.Insets
 import javafx.scene.Group
 import javafx.scene.SceneAntialiasing
 import javafx.scene.SubScene
+import javafx.scene.control.Accordion
 import javafx.scene.control.MenuBar
 import javafx.scene.control.ScrollPane
 import javafx.scene.input.MouseEvent
@@ -22,6 +23,9 @@ class MainSceneController {
 
     @FXML
     lateinit var root:AnchorPane;
+
+    @FXML
+    lateinit var toolboxAccordion: Accordion;
 
     @FXML
     lateinit var sphereContainer: AnchorPane;
@@ -48,6 +52,10 @@ class MainSceneController {
 
     fun initScene()
     {
+        toolboxAccordion.minWidth=0.0;
+        toolboxAccordion.maxWidth=300.0;
+        toolboxAccordion.maxHeight=500.0;
+
         sphereContainer.children.clear();
 
         objectParent=Group();
@@ -68,7 +76,7 @@ class MainSceneController {
             }
         }
 
-        //circuitview
+        //circuit view
         circuitContainer.maxHeight=200.0;
         circuitView= CircuitView(circuitContainer,operationContainer,root);
     }

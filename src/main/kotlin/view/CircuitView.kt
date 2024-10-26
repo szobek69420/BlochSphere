@@ -6,12 +6,19 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.FlowPane
 import javafx.scene.paint.Color
+import main.kotlin.elements.QuantumBitValueAdjuster
 import main.kotlin.elements.QuantumGateView
 import main.kotlin.elements.QuantumGateViewBackground
 import main.kotlin.elements.ResizableAnchorPane
+import main.kotlin.maths.Complex
+import main.kotlin.quantum.Qubit
 
 class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPane, val overlay:AnchorPane) {
     private val gatesInCircuit:ArrayList<String> = ArrayList<String>();
+
+    private val value:Qubit=Qubit(Complex(1.0f),Complex(0.0f));
+
+    private val valueAdjuster:QuantumBitValueAdjuster= QuantumBitValueAdjuster(value);
 
     //drag data
     private var inDrag:Boolean=false;
@@ -69,7 +76,13 @@ class CircuitView(val circuitContainer:AnchorPane, val operationContainer:FlowPa
         if(inDrag&&targetIndex!=-1)
             gatesInCircuit.add(targetIndex,"TEMP");
 
-        var offset=10.0;
+
+        circuitContainer.children.add(valueAdjuster);
+        AnchorPane.setLeftAnchor(valueAdjuster,10.0);
+        AnchorPane.setBottomAnchor(valueAdjuster,0.5*(circuitContainer.height-QuantumBitValueAdjuster.HEIGHT));
+
+
+        var offset=QuantumBitValueAdjuster.WIDTH+20.0;
         var index:Int=0;
         for (bill in gatesInCircuit)
         {
