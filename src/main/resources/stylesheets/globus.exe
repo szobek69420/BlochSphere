@@ -3,7 +3,11 @@
     src: url('../fonts/Monocraft.ttf');
 }
 
-#root {
+#windowRoot {
+-fx-font-family: 'Monocraft';
+}
+
+#title {
 -fx-font-family: 'Monocraft';
 }
 
@@ -33,3 +37,4 @@
     -fx-border-radius: 5px;
     -fx-border-width:  2px;
 }
+
