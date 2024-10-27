@@ -45,7 +45,7 @@ class Window() : Application() {
 
         stage=Stage();
         stage.scene=scene;
-        stage.title="Glock sphere";
+        stage.title="Morbisoft's Glock Sphere";
         stage.initStyle(StageStyle.DECORATED);
 
         val icon:Image= Image(this.javaClass.getResourceAsStream("/sprites/icon.png"));

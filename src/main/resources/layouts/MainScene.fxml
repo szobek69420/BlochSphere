@@ -28,9 +28,9 @@
                      <children>
                         <Accordion fx:id="toolboxAccordion" maxWidth="1.7976931348623157E308" style="-fx-background-color: black;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <panes>
-                              <TitledPane fx:id="normieContainerTitlePane" text="Normie gates">
+                              <TitledPane fx:id="normieContainerTitlePane" style="-fx-background-color: black;" text="Normie gates">
                                  <content>
-                                    <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" vbarPolicy="NEVER">
+                                    <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;" vbarPolicy="NEVER">
                                        <content>
                                           <FlowPane fx:id="normieContainer" hgap="10.0" prefHeight="200.0" prefWidth="200.0" rowValignment="TOP" style="-fx-background-color: black;" vgap="10.0">
                                              <padding>
@@ -40,8 +40,11 @@
                                        </content>
                                     </ScrollPane>
                                  </content>
+                                 <padding>
+                                    <Insets bottom="-1.0" left="-1.0" right="-1.0" top="-1.0" />
+                                 </padding>
                               </TitledPane>
-                              <TitledPane text="Phase gates">
+                              <TitledPane style="-fx-background-color: black;" text="Phase gates">
                                  <content>
                                     <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" vbarPolicy="NEVER">
                                        <content>
@@ -51,10 +54,16 @@
                                              </padding>
                                           </FlowPane>
                                        </content>
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                       <padding>
+                                          <Insets bottom="-1.0" left="-1.0" right="-1.0" top="-1.0" />
+                                       </padding>
                                     </ScrollPane>
                                  </content>
                               </TitledPane>
-                              <TitledPane text="Custom phase">
+                              <TitledPane style="-fx-background-color: black;" text="Custom phase">
                                  <content>
                                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                  </content>
