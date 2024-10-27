@@ -6,7 +6,7 @@ data class Matrix(val size: Int) {
     private val data:Array<Complex>;//row-major
 
     init {
-        data=Array<Complex>(size*size,{x->Complex(0.0f,0.0f)});
+        data=Array<Complex>(size*size,{x->Complex(0.0,0.0)});
     }
 
     operator fun get(i:Int,j:Int) : Complex

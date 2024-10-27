@@ -16,11 +16,11 @@
 }
 
 .titled-pane > .title > .text {
-    -fx-fill: rgb(255,209,0);
+    -fx-fill: rgb(247,151,29);
 }
 
 .titled-pane > .title > .arrow-button .arrow {
-    -fx-background-color: rgb(255,209,0);
+    -fx-background-color: rgb(247,151,29);
 }
 
 .titled-pane > .content{
@@ -29,7 +29,7 @@
 
 .split-pane > .split-pane-divider{
     -fx-background-color: rgb(50,50,50);
-    -fx-border-color: rgb(255,209,0);
+    -fx-border-color: rgb(247,151,29);
     -fx-border-radius: 5px;
     -fx-border-width:  2px;
 }

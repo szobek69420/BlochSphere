@@ -4,30 +4,30 @@ import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.pow
 
-data class Complex(var rl: Float, var img: Float)
+data class Complex(var rl: Double, var img: Double)
 {
-    constructor(rl: Float) : this(rl,0.0f);
+    constructor(rl: Double) : this(rl,0.0);
 
-    fun length():Float
+    fun length():Double
     {
-        var temp: Float=(this*this.adjugate()).rl;
-        if(temp<0.00001f)
-            return 0.0f;
-        return temp.pow(0.5f);
+        var temp=(this*this.adjugate()).rl;
+        if(temp<0.000001)
+            return 0.0;
+        return temp.pow(0.5);
     }
 
-    fun phase(): Float
+    fun phase(): Double
     {
-        var temp:Float=0.0f;
+        var temp=0.0;
         if(rl>0)
         {
             temp=atan2(img,rl);
         }
         else
         {
-            temp=atan2(-img,-rl)+PI.toFloat();
-            if(temp>PI.toFloat())
-                temp-=2.0f*PI.toFloat();
+            temp=atan2(-img,-rl)+PI;
+            if(temp>PI)
+                temp-=2.0*PI;
         }
         return temp;
     }
@@ -55,7 +55,7 @@ data class Complex(var rl: Float, var img: Float)
         img=rl*other.img+img*other.rl;
     }
 
-    operator fun timesAssign(other: Float)
+    operator fun timesAssign(other:Double)
     {
         rl*=other;
         img*=other;
@@ -68,7 +68,7 @@ data class Complex(var rl: Float, var img: Float)
         img=(img*other.rl-rl*other.img)/(other.rl*other.rl+other.img*other.img);
     }
 
-    operator fun divAssign(other:Float)
+    operator fun divAssign(other:Double)
     {
         rl/=other;
         img/=other;

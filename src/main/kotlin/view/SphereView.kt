@@ -72,7 +72,7 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
                     label.textFill=Color.WHITE;
                 }
 
-                refreshDisplay(Qubit(Complex(1.0f), Complex(0.0f)));
+                refreshDisplay(Qubit(Complex(1.0), Complex(0.0)));
                 onResize();
             }
         }
@@ -143,7 +143,7 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
         }
     }
 
-    private var value:Qubit=Qubit(Complex(1.0f,0.0f),Complex(0.0f,0.0f));
+    private var value:Qubit=Qubit(Complex(1.0,0.0),Complex(0.0,0.0));
 
     private var sphere: MeshView;
     private var arrow:QubitArrow;
@@ -254,13 +254,13 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
         val pb=value.b.length();
         val qubitLength=pa*pa+pb*pb;
 
-        if(abs(1.0f-qubitLength)>0.000001f)
+        if(abs(1.0-qubitLength)>0.000001)
         {
             error=true;
-            if(abs(pa)<0.000001f&&abs(pb)<0.000001f)
+            if(abs(pa)<0.000001&&abs(pb)<0.000001)
             {
-                value.a=Complex(1.0f);
-                value.b= Complex(0.0f);
+                value.a=Complex(1.0);
+                value.b= Complex(0.0);
             }
             else
             {

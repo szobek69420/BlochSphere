@@ -139,9 +139,9 @@ class QuantumBitValueAdjuster(private val startValue:Qubit, val onValueChange:(Q
 
     private fun TextField.initStyle(error:Boolean)
     {
-        val r=255;
-        val g=if(error) 0 else 209;
-        val b=0;
+        val r=if(error) 255 else 247;
+        val g=if(error) 0 else 151;
+        val b=if(error) 0 else 29;
 
         val textFieldStyle="""
             -fx-font-size: 22px; 
@@ -157,45 +157,45 @@ class QuantumBitValueAdjuster(private val startValue:Qubit, val onValueChange:(Q
     }
 
     private fun convertUserInput() {
-        val value:Qubit=Qubit(Complex(0.0f),Complex(0.0f));
+        val value:Qubit=Qubit(Complex(0.0),Complex(0.0));
 
         try{
-            value.a.rl=real1.text.toFloat();
+            value.a.rl=real1.text.toDouble();
             real1.initStyle(false);
         }
         catch(ex:Exception)
         {
-            value.a.rl=0.0f;
+            value.a.rl=0.0;
             real1.initStyle(true);
         }
 
         try{
-            value.a.img=img1.text.toFloat();
+            value.a.img=img1.text.toDouble();
             img1.initStyle(false);
         }
         catch(ex:Exception)
         {
-            value.a.img=0.0f;
+            value.a.img=0.0;
             img1.initStyle(true);
         }
 
         try{
-            value.b.rl=real2.text.toFloat();
+            value.b.rl=real2.text.toDouble();
             real2.initStyle(false);
         }
         catch(ex:Exception)
         {
-            value.b.rl=0.0f;
+            value.b.rl=0.0;
             real2.initStyle(true);
         }
 
         try{
-            value.b.img=img2.text.toFloat();
+            value.b.img=img2.text.toDouble();
             img2.initStyle(false);
         }
         catch(ex:Exception)
         {
-            value.b.img=0.0f;
+            value.b.img=0.0;
             img2.initStyle(true);
         }
 
