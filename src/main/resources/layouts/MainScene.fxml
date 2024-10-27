@@ -7,12 +7,20 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.kotlin.application.MainSceneController">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="606.0" prefWidth="840.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.kotlin.application.MainSceneController">
    <children>
-      <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="376.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <SplitPane dividerPositions="0.3029801324503311" orientation="VERTICAL" prefHeight="376.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <items>
-            <AnchorPane fx:id="circuitContainer" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="0.0" prefWidth="200.0" style="-fx-background-color: black;" />
+            <AnchorPane fx:id="circuitContainerScrollPaneContainer" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="0.0" prefWidth="200.0" style="-fx-background-color: black;">
+               <children>
+                  <ScrollPane fitToHeight="true" hbarPolicy="NEVER" pannable="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <content>
+                        <Pane fx:id="circuitContainer" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" />
+                     </content>
+                  </ScrollPane>
+               </children></AnchorPane>
             <SplitPane dividerPositions="0.5" prefHeight="178.0" prefWidth="598.0">
                <items>
                   <AnchorPane fx:id="sphereContainer" minHeight="-Infinity" minWidth="-Infinity" prefHeight="0.0" prefWidth="0.0" />
@@ -22,7 +30,7 @@
                            <panes>
                               <TitledPane fx:id="normieContainerTitlePane" text="Normie gates">
                                  <content>
-                                    <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
+                                    <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" vbarPolicy="NEVER">
                                        <content>
                                           <FlowPane fx:id="normieContainer" hgap="10.0" prefHeight="200.0" prefWidth="200.0" rowValignment="TOP" style="-fx-background-color: black;" vgap="10.0">
                                              <padding>
@@ -35,7 +43,7 @@
                               </TitledPane>
                               <TitledPane text="Phase gates">
                                  <content>
-                                    <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
+                                    <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" vbarPolicy="NEVER">
                                        <content>
                                           <FlowPane fx:id="phaseContainer" hgap="10.0" prefHeight="200.0" prefWidth="200.0" rowValignment="TOP" style="-fx-background-color: black;" vgap="10.0">
                                              <padding>

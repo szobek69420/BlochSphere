@@ -1,24 +1,18 @@
 package main.kotlin.application
 
+import javafx.event.EventHandler
 import javafx.fxml.FXML
-import javafx.geometry.Insets
 import javafx.scene.Group
 import javafx.scene.SceneAntialiasing
 import javafx.scene.SubScene
 import javafx.scene.control.Accordion
-import javafx.scene.control.MenuBar
 import javafx.scene.control.ScrollPane
-import javafx.scene.control.TitledPane
-import javafx.scene.input.MouseEvent
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
-import javafx.stage.Stage
 import main.kotlin.elements.BetterButton
-import main.kotlin.elements.ResizableAnchorPane
 import main.kotlin.quantum.Qubit
 import main.kotlin.view.CircuitView
 import main.kotlin.view.SphereView
-import java.lang.Exception
 
 
 class MainSceneController {
@@ -34,15 +28,14 @@ class MainSceneController {
 
 
     @FXML
-    lateinit var circuitContainer:AnchorPane;
+    lateinit var circuitContainer:Pane;
     @FXML
     lateinit var normieContainer:FlowPane;
     @FXML
     lateinit var phaseContainer:FlowPane;
 
-
     @FXML
-    lateinit var normieContainerTitlePane:TitledPane;
+    lateinit var circuitContainerScrollPaneContainer:AnchorPane;
 
 
 
@@ -84,8 +77,23 @@ class MainSceneController {
         }
 
         //circuit view
-        circuitContainer.maxHeight=200.0;
+        circuitContainerScrollPaneContainer.maxHeight=200.0;
         circuitView= CircuitView(circuitContainer,normieContainer,phaseContainer,root){q->onCircuitValueChange(q)};
+
+        circuitContainerScrollPaneContainer.layoutBoundsProperty().addListener(){_,oldValue,newValue->
+            if(oldValue.height!=newValue.height||oldValue.width!=newValue.width)
+            {
+                circuitView.circuitContainerWidth=newValue.width;
+                circuitView.circuitContainerHeight=newValue.height;
+                circuitView.renderCircuit();
+            }
+        }
+
+        //so that the scrollpane scrolls horizontally on mouse scroll
+        (circuitContainerScrollPaneContainer.children[0] as ScrollPane).onScroll= EventHandler { event ->
+            if(event!=null)
+                (circuitContainerScrollPaneContainer.children[0] as ScrollPane).hvalue-=10.0*event.deltaY/((circuitContainerScrollPaneContainer.children[0] as ScrollPane).content as Pane).width;
+        }
     }
 
     private fun onCircuitValueChange(value: Qubit)

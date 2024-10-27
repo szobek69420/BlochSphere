@@ -254,7 +254,7 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
         val pb=value.b.length();
         val qubitLength=pa*pa+pb*pb;
 
-        if(abs(1.0-qubitLength)>0.000001)
+        if(abs(1.0-qubitLength)>0.001)
         {
             error=true;
             if(abs(pa)<0.000001&&abs(pb)<0.000001)
