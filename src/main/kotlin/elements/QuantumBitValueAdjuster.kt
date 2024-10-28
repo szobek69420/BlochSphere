@@ -20,10 +20,10 @@ class QuantumBitValueAdjuster(private val startValue:Qubit, val onValueChange:(Q
         val WIDTH=260.0;
         val HEIGHT=90.0;
 
-        private var plusImage: Image?=null;
-        private var jImage:Image?=null;
-        private var cat0Image:Image?=null;
-        private var cat1Image:Image?=null;
+        private val plusImage: Image? by lazy { Image(Companion::class.java.getResourceAsStream("/sprites/plus.png")) };
+        private val jImage:Image? by lazy{ Image(Companion::class.java.getResourceAsStream("/sprites/j.png")) }
+        private val cat0Image:Image? by lazy{ Image(Companion::class.java.getResourceAsStream("/sprites/cat0.png")) }
+        private val cat1Image:Image? by lazy{ Image(Companion::class.java.getResourceAsStream("/sprites/cat1.png")) }
     }
 
     private val background: Rectangle;
@@ -41,8 +41,6 @@ class QuantumBitValueAdjuster(private val startValue:Qubit, val onValueChange:(Q
     private val j2:ImageView;
 
     init {
-        importImages();
-
         background= Rectangle(WIDTH, HEIGHT);
         background.fill= Color(0.2,0.2,0.2,1.0);
         background.arcWidth=20.0;
@@ -112,18 +110,6 @@ class QuantumBitValueAdjuster(private val startValue:Qubit, val onValueChange:(Q
         j2.translateY=52.5;
 
         this.children.addAll(background,real1,img1,real2,img2,cat0,cat1,plus1,plus2,j1,j2);
-    }
-
-    private fun importImages()
-    {
-        if(plusImage==null)
-            plusImage=Image(this.javaClass.getResourceAsStream("/sprites/plus.png"));
-        if(jImage==null)
-            jImage=Image(this.javaClass.getResourceAsStream("/sprites/j.png"));
-        if(cat0Image==null)
-            cat0Image=Image(this.javaClass.getResourceAsStream("/sprites/cat0.png"));
-        if(cat1Image==null)
-            cat1Image=Image(this.javaClass.getResourceAsStream("/sprites/cat1.png"));
     }
 
     private fun TextField.setOrientation(width:Double,height:Double, offsetX:Double, offsetY:Double)

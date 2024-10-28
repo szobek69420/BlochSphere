@@ -50,6 +50,12 @@ class MainSceneController {
     lateinit var rescaleButton:AnchorPane;
     @FXML
     lateinit var minimizeButton:AnchorPane;
+    @FXML
+    lateinit var leftResize:AnchorPane;
+    @FXML
+    lateinit var rightResize:AnchorPane;
+    @FXML
+    lateinit var bottomResize:AnchorPane;
 
 
 

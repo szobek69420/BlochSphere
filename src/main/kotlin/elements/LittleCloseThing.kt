@@ -7,13 +7,10 @@ import javafx.scene.input.MouseEvent
 
 class LittleCloseThing(scale:Double, private val gateIndex:Int,private val onClick:(Int)->Unit): ImageView() {
     companion object{
-        private var sourceImage: Image?=null;
+        private val sourceImage: Image by lazy{ Image(Companion::class.java.getResourceAsStream("/sprites/close.png")) };
     }
 
     init{
-        if(sourceImage==null)
-            sourceImage=Image(this.javaClass.getResourceAsStream("/sprites/close.png"));
-
         image= sourceImage;
 
         fitWidth=scale;

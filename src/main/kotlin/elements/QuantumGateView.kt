@@ -16,15 +16,15 @@ class QuantumGateView(var text:String, val index:Int, val _fill:Color, val onGra
     companion object{
         val SCALE=75.0;
 
-        private var xImage: Image?=null;
-        private var yImage:Image?=null;
-        private var zImage:Image?=null;
-        private var hImage:Image?=null;
-        private var sImage:Image?=null;
-        private var sAdjImage:Image?=null;
-        private var tImage:Image?=null;
-        private var tAdjImage:Image?=null;
-        private var pImage:Image?=null;
+        private val xImage: Image? by lazy{ Image(Companion::class.java.getResourceAsStream("/sprites/x_gate.png")) };
+        private val yImage:Image? by lazy{ Image(Companion::class.java.getResourceAsStream("/sprites/y_gate.png")) }
+        private val zImage:Image? by lazy { Image(Companion::class.java.getResourceAsStream("/sprites/z_gate.png")) }
+        private val hImage:Image? by lazy { Image(Companion::class.java.getResourceAsStream("/sprites/h_gate.png")) }
+        private val sImage:Image? by lazy { Image(Companion::class.java.getResourceAsStream("/sprites/s_gate.png")) }
+        private val sAdjImage:Image? by lazy { Image(Companion::class.java.getResourceAsStream("/sprites/s_adj_gate.png")) }
+        private val tImage:Image? by lazy { Image(Companion::class.java.getResourceAsStream("/sprites/t_gate.png")) }
+        private val tAdjImage:Image? by lazy { Image(Companion::class.java.getResourceAsStream("/sprites/t_adj_gate.png")) }
+        private val pImage:Image? by lazy { Image(Companion::class.java.getResourceAsStream("/sprites/p_gate.png")) }
     }
 
     private val image: ImageView;
@@ -56,56 +56,19 @@ class QuantumGateView(var text:String, val index:Int, val _fill:Color, val onGra
 
     private fun getImageFromGate(gate:String):Image?
     {
-        when(gate)
-        {
-            "X"->{
-                if(xImage==null)
-                    xImage=Image(this.javaClass.getResourceAsStream("/sprites/x_gate.png"));
-                return xImage;
-            }
-            "Y"->{
-                if(yImage==null)
-                    yImage=Image(this.javaClass.getResourceAsStream("/sprites/y_gate.png"));
-                return yImage;
-            }
-            "Z"->{
-                if(zImage==null)
-                    zImage=Image(this.javaClass.getResourceAsStream("/sprites/z_gate.png"));
-                return zImage;
-            }
-            "H"->{
-                if(hImage==null)
-                    hImage=Image(this.javaClass.getResourceAsStream("/sprites/h_gate.png"));
-                return hImage;
-            }
-            "S"->{
-                if(sImage==null)
-                    sImage=Image(this.javaClass.getResourceAsStream("/sprites/s_gate.png"));
-                return sImage;
-            }
-            "S_ADJ"->{
-                if(sAdjImage==null)
-                    sAdjImage=Image(this.javaClass.getResourceAsStream("/sprites/s_adj_gate.png"));
-                return sAdjImage;
-            }
-            "T"->{
-                if(tImage==null)
-                    tImage=Image(this.javaClass.getResourceAsStream("/sprites/t_gate.png"));
-                return tImage;
-            }
-            "T_ADJ"->{
-                if(tAdjImage==null)
-                    tAdjImage=Image(this.javaClass.getResourceAsStream("/sprites/t_adj_gate.png"));
-                return tAdjImage;
-            }
-            "P"->{
-                if(pImage==null)
-                    pImage=Image(this.javaClass.getResourceAsStream("/sprites/p_gate.png"));
-                return pImage;
-            }
+        return when(gate) {
+            "X"-> xImage
+            "Y"-> yImage
+            "Z"-> zImage
+            "H"-> hImage
+            "S"-> sImage
+            "S_ADJ"-> sAdjImage
+            "T"-> tImage
+            "T_ADJ"-> tAdjImage
+            "P"-> pImage
 
-            else->{
-                return null;
+            else -> {
+                null
             }
         }
     }

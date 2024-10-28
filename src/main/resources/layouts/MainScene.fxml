@@ -15,7 +15,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="windowRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="631.0" prefWidth="840.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.kotlin.application.MainSceneController">
+<AnchorPane fx:id="windowRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="631.0" prefWidth="840.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.kotlin.application.MainSceneController">
    <children>
       <VBox layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="622.0" prefWidth="840.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -66,20 +66,21 @@
             </HBox>
             <HBox fx:id="contentHBox" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: black;" VBox.vgrow="ALWAYS">
                <children>
+                  <AnchorPane fx:id="leftResize" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="3.0" style="-fx-background-color: rgb(50,50,50);" HBox.hgrow="NEVER" />
                   <AnchorPane fx:id="applicationRoot" prefHeight="606.0" prefWidth="840.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <SplitPane dividerPositions="0.3029801324503311" orientation="VERTICAL" prefHeight="376.0" prefWidth="600.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <SplitPane dividerPositions="0.3029801324503311" orientation="VERTICAL" prefHeight="376.0" prefWidth="600.0" style="-fx-background-color: rgb(50,50,50);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <items>
-                              <AnchorPane fx:id="circuitContainerScrollPaneContainer" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="0.0" prefWidth="200.0" style="-fx-background-color: black;">
+                              <AnchorPane fx:id="circuitContainerScrollPaneContainer" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="0.0" prefWidth="200.0" style="-fx-background-color: rgb(50,50,50);">
                                  <children>
-                                    <ScrollPane fitToHeight="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <ScrollPane fitToHeight="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: rgb(50,50,50);" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <content>
                                           <Pane fx:id="circuitContainer" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" />
                                        </content>
                                     </ScrollPane>
                                  </children>
                               </AnchorPane>
-                              <SplitPane dividerPositions="0.5" prefHeight="178.0" prefWidth="598.0">
+                              <SplitPane dividerPositions="0.5" prefHeight="178.0" prefWidth="598.0" style="-fx-background-color: rgb(50,50,50);">
                                  <items>
                                     <AnchorPane fx:id="sphereContainer" minHeight="-Infinity" minWidth="-Infinity" prefHeight="0.0" prefWidth="0.0" />
                                     <AnchorPane maxWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" style="-fx-background-color: black;">
@@ -136,8 +137,10 @@
                         </SplitPane>
                      </children>
                   </AnchorPane>
+                  <AnchorPane fx:id="rightResize" layoutX="10.0" layoutY="10.0" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="3.0" style="-fx-background-color: rgb(50,50,50);" HBox.hgrow="NEVER" />
                </children>
             </HBox>
+            <AnchorPane fx:id="bottomResize" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="3.0" prefWidth="3.0" style="-fx-background-color: rgb(50,50,50);" VBox.vgrow="NEVER" />
          </children>
       </VBox>
    </children>

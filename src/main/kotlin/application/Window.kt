@@ -57,10 +57,9 @@ class Window() : Application() {
 
         stage.width+=1.0;//to trigger a layout reload, so that the circuit renders properly
 
-        val mouseHandler:MouseEventHandler=MouseEventHandler(stage){event->onApplicationRescale(event);};//a stage show utan kell letrehozni, mert konstruktorban lekeri a stage mereteit
-        controller.menuBarDraggable.onMousePressed=mouseHandler;
-        controller.menuBarDraggable.onMouseDragged=mouseHandler;
-        controller.menuBarDraggable.onMouseReleased=mouseHandler;
+
+
+        initWindowManager()
     }
 
     fun closeApplication()
@@ -71,6 +70,11 @@ class Window() : Application() {
     fun minimizeApplication()
     {
         stage.isIconified=true;
+    }
+
+    fun isApplicationMaximized():Boolean
+    {
+        return (controller.menuBarDraggable.onMouseDragged as MouseEventHandler).screenState==MouseEventHandler.ScreenState.FULL;
     }
 
 
@@ -90,6 +94,33 @@ class Window() : Application() {
     private fun onApplicationRescale(handler:MouseEventHandler)
     {
         controller.changeRescaleImage(handler.screenState==MouseEventHandler.ScreenState.FULL);
+    }
+
+
+    private fun initWindowManager()
+    {
+        val mouseHandler:MouseEventHandler=MouseEventHandler(stage){event->onApplicationRescale(event)}//a stage show utan kell letrehozni, mert konstruktorban lekeri a stage mereteit
+        controller.menuBarDraggable.onMousePressed=mouseHandler
+        controller.menuBarDraggable.onMouseDragged=mouseHandler
+        controller.menuBarDraggable.onMouseReleased=mouseHandler
+
+        val leftRescaleHandler=MouseRescaleHandler(Cursor.H_RESIZE,1.0,0.0,-1.0,0.0)
+        controller.leftResize.onMouseEntered=leftRescaleHandler
+        controller.leftResize.onMouseExited=leftRescaleHandler
+        controller.leftResize.onMouseDragged=leftRescaleHandler
+        controller.leftResize.onMousePressed=leftRescaleHandler
+
+        val rightRescaleHandler=MouseRescaleHandler(Cursor.H_RESIZE,0.0,0.0,1.0,0.0)
+        controller.rightResize.onMouseEntered=rightRescaleHandler
+        controller.rightResize.onMouseExited=rightRescaleHandler
+        controller.rightResize.onMouseDragged=rightRescaleHandler
+        controller.rightResize.onMousePressed=rightRescaleHandler
+
+        val bottomRescaleHandler=MouseRescaleHandler(Cursor.V_RESIZE,0.0,0.0,0.0,1.0)
+        controller.bottomResize.onMouseEntered=bottomRescaleHandler
+        controller.bottomResize.onMouseExited=bottomRescaleHandler
+        controller.bottomResize.onMouseDragged=bottomRescaleHandler
+        controller.bottomResize.onMousePressed=bottomRescaleHandler
     }
 
     //needed to move around my borderless window
@@ -234,5 +265,36 @@ class Window() : Application() {
 
             onRescale?.invoke(this);
         }
+    }
+
+    class MouseRescaleHandler(val cursor:Cursor, val offsetX:Double, val offsetY:Double, val scaleX:Double, val scaleY:Double) : EventHandler<MouseEvent>
+    {
+        private var prevScreenX:Double=0.0;
+        private var prevScreenY:Double=0.0;
+
+        override fun handle(event: MouseEvent?) {
+            if(event==null||Window.mainWindow==null||Window.mainWindow!!.isApplicationMaximized())
+                return;
+
+            when(event.eventType)
+            {
+                MouseEvent.MOUSE_ENTERED->Window.mainWindow!!.stage.scene.cursor=cursor
+                MouseEvent.MOUSE_EXITED->Window.mainWindow!!.stage.scene.cursor=Cursor.DEFAULT;
+                MouseEvent.MOUSE_PRESSED->{prevScreenX=event.screenX; prevScreenY=event.screenY}
+                MouseEvent.MOUSE_DRAGGED->{
+                    val deltaX=event.screenX-prevScreenX
+                    val deltaY=event.screenY-prevScreenY
+
+                    Window.mainWindow!!.stage.x+=deltaX*offsetX
+                    Window.mainWindow!!.stage.y+=deltaY*offsetY
+                    Window.mainWindow!!.stage.width+=deltaX*scaleX
+                    Window.mainWindow!!.stage.height+=deltaY*scaleY
+
+                    prevScreenX=event.screenX
+                    prevScreenY=event.screenY
+                }
+            }
+        }
+
     }
 }
