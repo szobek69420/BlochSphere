@@ -1,19 +1,24 @@
 package main.kotlin.view
 
+import javafx.event.EventHandler
 import javafx.geometry.Point2D
 import javafx.scene.Node
+import javafx.scene.control.Slider
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.FlowPane
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
+import javafx.scene.text.Text
 import main.kotlin.elements.*
 import main.kotlin.maths.Complex
 import main.kotlin.maths.Matrix
 import main.kotlin.quantum.Qubit
+import kotlin.math.cos
+import kotlin.math.sin
 
-class CircuitView(val circuitContainer: Pane, val normieContainer:FlowPane, val phaseContainer:FlowPane, val overlay:AnchorPane, val onValueChange:(Qubit)->Unit) {
+class CircuitView(val circuitContainer: Pane, val normieContainer:FlowPane, val phaseContainer:FlowPane, val customPhaseContainer:FlowPane, val overlay:AnchorPane, val onValueChange:(Qubit)->Unit) {
     private val gatesInCircuit:ArrayList<String> = ArrayList<String>();
 
     private val value:Qubit=Qubit(Complex(1.0),Complex(0.0));
@@ -23,6 +28,9 @@ class CircuitView(val circuitContainer: Pane, val normieContainer:FlowPane, val 
         this.value.b=value.b;
         calculateValue();
     };
+
+    private val customPhaseText: Text;
+    private val customPhaseSlider:Slider;
 
     //drag data
     private var inDrag:Boolean=false;
@@ -45,6 +53,20 @@ class CircuitView(val circuitContainer: Pane, val normieContainer:FlowPane, val 
         renderCircuit();
 
         fillGateRegistry();
+
+        customPhaseText=customPhaseContainer.parent.childrenUnmodifiable[1] as Text
+
+        customPhaseSlider=customPhaseContainer.parent.childrenUnmodifiable[2] as Slider
+        customPhaseSlider.adjustValue(69.0)
+        customPhaseSlider.valueProperty().addListener(){ _, oldValue, newValue ->
+            if(oldValue!=newValue)
+            {
+                customPhaseContainer.children.clear();
+                customPhaseContainer.children.add(QuantumGateView("P|${customPhaseSlider.value}",-1, Color(0.96,0.59,0.11,1.0),{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);}));
+                customPhaseText.text="Phase angle: ${String.format("%.2f",customPhaseSlider.value)}°"
+            }
+        }
+        customPhaseSlider.adjustValue(0.0)
     }
 
     private fun fillGateRegistry()
@@ -54,6 +76,8 @@ class CircuitView(val circuitContainer: Pane, val normieContainer:FlowPane, val 
 
         for(gate in arrayOf("S","S_ADJ","T","T_ADJ"))
             phaseContainer.children.add(QuantumGateView(gate,-1, Color(0.96,0.59,0.11,1.0),{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);}));
+
+        customPhaseContainer.children.add(QuantumGateView("P|0",-1, Color(0.96,0.59,0.11,1.0),{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);}));
     }
 
     fun renderCircuit()
@@ -111,7 +135,7 @@ class CircuitView(val circuitContainer: Pane, val normieContainer:FlowPane, val 
                 colour=Color.DEEPSKYBLUE;
             var text=if(bill=="TEMP")"" else bill;
 
-            val gate:QuantumGateView=QuantumGateView(text.substringBefore('|'), index, colour,{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);});
+            val gate:QuantumGateView=QuantumGateView(text, index, colour,{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);});
             circuitContainer.children.add(gate);
             gate.translateX=offset+12.5;
             gate.translateY=0.5*(circuitContainerHeight-QuantumGateView.SCALE);
@@ -301,6 +325,12 @@ class CircuitView(val circuitContainer: Pane, val normieContainer:FlowPane, val 
                 mat[0,0].rl = 1.0;
                 mat[1,1].rl = 0.7071068;
                 mat[1,1].img = -0.7071068;
+            }
+            "P"->{
+                val angle=Math.toRadians(gate.substringAfter('|').toDouble());
+                mat[0,0].rl=1.0;
+                mat[1,1].rl= cos(angle);
+                mat[1,1].img=sin(angle);
             }
             else->{
                 mat[0,0].rl=1.0;

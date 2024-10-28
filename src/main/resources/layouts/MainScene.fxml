@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.image.Image?>
@@ -19,43 +20,46 @@
    <children>
       <VBox layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="622.0" prefWidth="840.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox fx:id="menuBar" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" prefWidth="200.0" style="-fx-background-color: rgb(50,50,50);" VBox.vgrow="NEVER">
+            <HBox fx:id="menuBar" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: rgb(50,50,50);" VBox.vgrow="NEVER">
                <children>
                   <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" HBox.hgrow="NEVER">
                      <image>
                         <Image url="@../sprites/icon.png" />
                      </image>
+                     <HBox.margin>
+                        <Insets bottom="2.5" left="2.5" top="2.5" />
+                     </HBox.margin>
                   </ImageView>
                   <Text fx:id="title" boundsType="LOGICAL_VERTICAL_CENTER" fill="#f7971d" strokeType="OUTSIDE" strokeWidth="0.0" text="Morbisoft's Glock Sphere" textOrigin="CENTER" HBox.hgrow="NEVER">
                      <font>
-                        <Font name="System Bold" size="14.0" />
+                        <Font name="System Bold" size="16.0" />
                      </font>
                      <HBox.margin>
                         <Insets left="5.0" />
                      </HBox.margin>
                   </Text>
                   <AnchorPane fx:id="menuBarDraggable" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-                  <AnchorPane fx:id="minimizeButton" prefHeight="25.0" prefWidth="25.0" HBox.hgrow="NEVER">
+                  <AnchorPane fx:id="minimizeButton" prefHeight="30.0" prefWidth="30.0" HBox.hgrow="NEVER">
                      <children>
-                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" style="-fx-background-color: red;">
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" style="-fx-background-color: red;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
                               <Image url="@../sprites/minimize.png" />
                            </image>
                         </ImageView>
                      </children>
                   </AnchorPane>
-                  <AnchorPane fx:id="rescaleButton" prefHeight="25.0" prefWidth="25.0" HBox.hgrow="NEVER">
+                  <AnchorPane fx:id="rescaleButton" prefHeight="30.0" prefWidth="30.0" HBox.hgrow="NEVER">
                      <children>
-                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true">
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
                               <Image url="@../sprites/rescale1.png" />
                            </image>
                         </ImageView>
                      </children>
                   </AnchorPane>
-                  <AnchorPane fx:id="closeButton" prefHeight="25.0" prefWidth="25.0" HBox.hgrow="NEVER">
+                  <AnchorPane fx:id="closeButton" prefHeight="30.0" prefWidth="30.0" HBox.hgrow="NEVER">
                      <children>
-                        <ImageView fx:id="closeImage" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true">
+                        <ImageView fx:id="closeImage" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
                               <Image url="@../sprites/x.png" />
                            </image>
@@ -124,7 +128,34 @@
                                                 </TitledPane>
                                                 <TitledPane style="-fx-background-color: black;" text="Custom phase">
                                                    <content>
-                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                         <children>
+                                                            <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                               <children>
+                                                                  <FlowPane fx:id="customPhaseContainer" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;">
+                                                                     <padding>
+                                                                        <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
+                                                                     </padding>
+                                                                  </FlowPane>
+                                                                  <Text fx:id="customPhaseText" fill="#f7971d" strokeType="OUTSIDE" strokeWidth="0.0" text="Polar angle: 0°" VBox.vgrow="NEVER">
+                                                                     <font>
+                                                                        <Font name="System Bold" size="16.0" />
+                                                                     </font>
+                                                                     <VBox.margin>
+                                                                        <Insets bottom="5.0" left="15.0" right="10.0" top="15.0" />
+                                                                     </VBox.margin>
+                                                                  </Text>
+                                                                  <Slider fx:id="customPhaseSlider" blockIncrement="1.0" max="180.0" min="-180.0" VBox.vgrow="NEVER">
+                                                                     <VBox.margin>
+                                                                        <Insets bottom="15.0" left="13.0" right="13.0" />
+                                                                     </VBox.margin>
+                                                                  </Slider>
+                                                               </children>
+                                                            </VBox>
+                                                         </children>
+                                                         <padding>
+                                                            <Insets bottom="-5.0" left="-5.0" right="-5.0" top="-5.0" />
+                                                         </padding></AnchorPane>
                                                    </content>
                                                 </TitledPane>
                                              </panes>

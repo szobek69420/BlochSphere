@@ -37,7 +37,7 @@ class QuantumGateView(var text:String, val index:Int, val _fill:Color, val onGra
         background.arcHeight=20.0;
 
         image=ImageView();
-        image.image=getImageFromGate(text);
+        image.image=getImageFromGate(text.substringBefore('|'));
         image.fitWidth=60.0;
         image.fitHeight=60.0;
         image.translateX=7.5;

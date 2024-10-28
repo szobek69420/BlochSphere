@@ -37,6 +37,8 @@ class MainSceneController {
     lateinit var normieContainer:FlowPane;
     @FXML
     lateinit var phaseContainer:FlowPane;
+    @FXML
+    lateinit var customPhaseContainer:FlowPane;
 
     @FXML
     lateinit var circuitContainerScrollPaneContainer:AnchorPane;
@@ -96,7 +98,7 @@ class MainSceneController {
 
         //circuit view
         circuitContainerScrollPaneContainer.maxHeight=200.0;
-        circuitView= CircuitView(circuitContainer,normieContainer,phaseContainer,applicationRoot){q->onCircuitValueChange(q)};
+        circuitView= CircuitView(circuitContainer,normieContainer,phaseContainer,customPhaseContainer,applicationRoot){q->onCircuitValueChange(q)};
 
         circuitContainerScrollPaneContainer.layoutBoundsProperty().addListener(){_,oldValue,newValue->
             if(oldValue.height!=newValue.height||oldValue.width!=newValue.width)

@@ -38,3 +38,21 @@
     -fx-border-width:  2px;
 }
 
+#customPhaseSlider > .thumb {
+    -fx-background-color: rgb(247,151,29);
+}
+
+#customPhaseSlider:pressed > .thumb {
+    -fx-background-color: rgb(255,106,0);
+}
+
+#customPhaseSlider > .track {
+    -fx-background-color: white;
+}
+
+#customPhaseText {
+    -fx-font-family: 'Monocraft';
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
