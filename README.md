@@ -1,2 +1,5 @@
-# ebic-bloch-sphere-simulator-2000
-Yet again one of the repositories of all time
+# Bloch sphere simulator
+
+I welcome you.
+Here you can see yet one of the repos of all time.
+Enjoy!
