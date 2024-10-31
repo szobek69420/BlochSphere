@@ -6,6 +6,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
+group 'main'
 
 repositories {
     mavenCentral()
@@ -42,15 +43,9 @@ sourceSets {
         kotlin {
             srcDirs = ['src']
         }
-        java {
-            srcDirs = ['src']
-        }
     }
     test {
         kotlin {
-            srcDirs = ['src']
-        }
-        java {
             srcDirs = ['src']
         }
     }
@@ -65,10 +60,10 @@ java {
 shadowJar {
     duplicatesStrategy=DuplicatesStrategy.EXCLUDE
     manifest {
-        attributes["Main-Class"] = "main.java.Main"
+        attributes["Main-Class"] = "main.kotlin.MainKt"
     }
 }
 
 application {
-    mainClassName = 'main.java.Main'
+    mainClassName = 'main.kotlin.MainKt'
 }

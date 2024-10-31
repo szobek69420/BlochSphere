@@ -14,7 +14,7 @@ import javafx.scene.text.TextAlignment
 class QuantumGateView(var text:String, val index:Int, val _fill:Color, val onGrab: (String, Int, MouseEvent)->Unit, val onDrag:(String, MouseEvent)->Unit):Group() {
 
     companion object{
-        val SCALE=75.0;
+        val SCALE=75.0
 
         private val xImage: Image? by lazy{ Image(Companion::class.java.getResourceAsStream("/sprites/x_gate.png")) };
         private val yImage:Image? by lazy{ Image(Companion::class.java.getResourceAsStream("/sprites/y_gate.png")) }
@@ -27,31 +27,31 @@ class QuantumGateView(var text:String, val index:Int, val _fill:Color, val onGra
         private val pImage:Image? by lazy { Image(Companion::class.java.getResourceAsStream("/sprites/p_gate.png")) }
     }
 
-    private val image: ImageView;
-    private val background:Rectangle;
+    private val image: ImageView
+    private val background:Rectangle
 
     init{
-        background=Rectangle(SCALE,SCALE);
-        background.fill=_fill;
-        background.arcWidth=20.0;
-        background.arcHeight=20.0;
+        background=Rectangle(SCALE,SCALE)
+        background.fill=_fill
+        background.arcWidth=20.0
+        background.arcHeight=20.0
 
-        image=ImageView();
-        image.image=getImageFromGate(text.substringBefore('|'));
-        image.fitWidth=60.0;
-        image.fitHeight=60.0;
-        image.translateX=7.5;
-        image.translateY=7.5;
+        image=ImageView()
+        image.image=getImageFromGate(text.substringBefore('|'))
+        image.fitWidth=60.0
+        image.fitHeight=60.0
+        image.translateX=7.5
+        image.translateY=7.5
 
-        children.addAll(background,image);
+        children.addAll(background,image)
 
-        val mouseHandler:MouseHandler= MouseHandler(this);
-        background.onMousePressed=mouseHandler;
-        background.onMouseReleased=mouseHandler;
-        background.onMouseDragged=mouseHandler;
-        image.onMousePressed=mouseHandler;
-        image.onMouseReleased=mouseHandler;
-        image.onMouseDragged=mouseHandler;
+        val mouseHandler:MouseHandler= MouseHandler(this)
+        background.onMousePressed=mouseHandler
+        background.onMouseReleased=mouseHandler
+        background.onMouseDragged=mouseHandler
+        image.onMousePressed=mouseHandler
+        image.onMouseReleased=mouseHandler
+        image.onMouseDragged=mouseHandler
     }
 
     private fun getImageFromGate(gate:String):Image?
@@ -77,12 +77,12 @@ class QuantumGateView(var text:String, val index:Int, val _fill:Color, val onGra
     class MouseHandler(val view:QuantumGateView):EventHandler<MouseEvent>{
         override fun handle(event: MouseEvent?) {
             if(event==null)
-                return;
+                return
 
             when(event.eventType){
-                MouseEvent.MOUSE_PRESSED->view.onGrab(view.text,view.index,event);
-                MouseEvent.MOUSE_RELEASED->view.onGrab(view.text,view.index,event);
-                MouseEvent.MOUSE_DRAGGED->view.onDrag(view.text,event);
+                MouseEvent.MOUSE_PRESSED->view.onGrab(view.text,view.index,event)
+                MouseEvent.MOUSE_RELEASED->view.onGrab(view.text,view.index,event)
+                MouseEvent.MOUSE_DRAGGED->view.onDrag(view.text,event)
             }
         }
 

@@ -21,41 +21,41 @@ class Window() : Application() {
     init
     {
         if(mainWindow==null)
-            mainWindow=this;
+            mainWindow=this
     }
 
     companion object
     {
-        var mainWindow:Window?=null;//a static window instance that should be the one instantiated by the application
+        var mainWindow:Window?=null//a static window instance that should be the one instantiated by the application
     }
 
-    lateinit var controller: MainSceneController;
-    lateinit var stage:Stage;
-    lateinit var root: Parent;
+    lateinit var controller: MainSceneController
+    lateinit var stage:Stage
+    lateinit var root: Parent
 
     override fun start(primaryStage: Stage?) {
-        var loader:FXMLLoader=FXMLLoader(this.javaClass.getResource("/layouts/MainScene.fxml"));
-        root =loader.load();
+        var loader:FXMLLoader=FXMLLoader(this.javaClass.getResource("/layouts/MainScene.fxml"))
+        root =loader.load()
 
 
-        var scene: Scene=Scene(root);
-        scene.stylesheets.add(this.javaClass.getResource("/stylesheets/globus.exe")?.toExternalForm());
+        var scene: Scene=Scene(root)
+        scene.stylesheets.add(this.javaClass.getResource("/stylesheets/globus.exe")?.toExternalForm())
 
-        controller=loader.getController();
+        controller=loader.getController()
 
-        stage=Stage();
-        stage.scene=scene;
-        stage.title="Morbisoft's Glock Sphere";
-        stage.initStyle(StageStyle.UNDECORATED);
+        stage=Stage()
+        stage.scene=scene
+        stage.title="Morbisoft's Glock Sphere"
+        stage.initStyle(StageStyle.UNDECORATED)
 
-        val icon:Image= Image(this.javaClass.getResourceAsStream("/sprites/icon.png"));
-        stage.icons.add(icon);
+        val icon:Image= Image(this.javaClass.getResourceAsStream("/sprites/icon.png"))
+        stage.icons.add(icon)
 
-        controller.initScene();
+        controller.initScene()
 
-        stage.show();
+        stage.show()
 
-        stage.width+=1.0;//to trigger a layout reload, so that the circuit renders properly
+        stage.width+=1.0//to trigger a layout reload, so that the circuit renders properly
 
 
 
@@ -64,36 +64,36 @@ class Window() : Application() {
 
     fun closeApplication()
     {
-        stage.close();
+        stage.close()
     }
 
     fun minimizeApplication()
     {
-        stage.isIconified=true;
+        stage.isIconified=true
     }
 
     fun isApplicationMaximized():Boolean
     {
-        return (controller.menuBarDraggable.onMouseDragged as MouseEventHandler).screenState==MouseEventHandler.ScreenState.FULL;
+        return (controller.menuBarDraggable.onMouseDragged as MouseEventHandler).screenState==MouseEventHandler.ScreenState.FULL
     }
 
 
     fun rescaleApplication()
     {
-        val handler:MouseEventHandler=controller.menuBarDraggable.onMouseDragged as MouseEventHandler;
+        val handler:MouseEventHandler=controller.menuBarDraggable.onMouseDragged as MouseEventHandler
 
         if(handler.screenState==MouseEventHandler.ScreenState.FULL)
-            handler.desiredScreenState=MouseEventHandler.ScreenState.NORMAL;
+            handler.desiredScreenState=MouseEventHandler.ScreenState.NORMAL
         else
-            handler.desiredScreenState=MouseEventHandler.ScreenState.FULL;
+            handler.desiredScreenState=MouseEventHandler.ScreenState.FULL
 
         handler.adjustScreenState(null);
-        controller.changeRescaleImage(handler.screenState==MouseEventHandler.ScreenState.FULL);//change the icon of the rescale button
+        controller.changeRescaleImage(handler.screenState==MouseEventHandler.ScreenState.FULL)//change the icon of the rescale button
     }
 
     private fun onApplicationRescale(handler:MouseEventHandler)
     {
-        controller.changeRescaleImage(handler.screenState==MouseEventHandler.ScreenState.FULL);
+        controller.changeRescaleImage(handler.screenState==MouseEventHandler.ScreenState.FULL)
     }
 
 
@@ -126,13 +126,13 @@ class Window() : Application() {
     //needed to move around my borderless window
     class MouseEventHandler(private val stage:Stage, private val onRescale:((MouseEventHandler)->Unit)?) : EventHandler<MouseEvent>
     {
-        private var offsetX:Double=0.0;
-        private var offsetY:Double=0.0;
+        private var offsetX:Double=0.0
+        private var offsetY:Double=0.0
 
-        private var previousOffsetX:Double=0.0;
-        private var previousOffsetY:Double=0.0;
-        private var previousWidth:Double=0.0;
-        private var previousHeight:Double=0.0;
+        private var previousOffsetX:Double=0.0
+        private var previousOffsetY:Double=0.0
+        private var previousWidth:Double=0.0
+        private var previousHeight:Double=0.0
 
         //where does the screen orient itself
         enum class ScreenState{
@@ -141,7 +141,7 @@ class Window() : Application() {
 
         var screenState:ScreenState=ScreenState.NORMAL;
         var desiredScreenState:ScreenState=ScreenState.NORMAL;
-        private val SCREEN_STAGE_CHANGE_THRESHOLD:Double=2.0;//if the mouse is within 2 pixels of the screens top/left/right side, the screen will want to change state
+        private val SCREEN_STAGE_CHANGE_THRESHOLD:Double=2.0//if the mouse is within 2 pixels of the screens top/left/right side, the screen will want to change state
 
         init{
             previousWidth=stage.width;
@@ -218,63 +218,63 @@ class Window() : Application() {
 
             if(event!=null)
             {
-                previousOffsetX=event.sceneX;
-                previousOffsetY=event.sceneY;
+                previousOffsetX=event.sceneX
+                previousOffsetY=event.sceneY
 
-                previousWidth=stage.width;
-                previousHeight=stage.height;
+                previousWidth=stage.width
+                previousHeight=stage.height
             }
             else
             {
-                previousOffsetX=stage.width*0.5;
-                previousOffsetY=20.0;
+                previousOffsetX=stage.width*0.5
+                previousOffsetY=20.0
             }
 
             when(desiredScreenState)
             {
                 ScreenState.FULL->{
-                    stage.x=Screen.getPrimary().visualBounds.minX;
-                    stage.y=Screen.getPrimary().visualBounds.minY;
-                    stage.width=Screen.getPrimary().visualBounds.minX+Screen.getPrimary().visualBounds.width;
-                    stage.height=Screen.getPrimary().visualBounds.minY+Screen.getPrimary().visualBounds.height;
+                    stage.x=Screen.getPrimary().visualBounds.minX
+                    stage.y=Screen.getPrimary().visualBounds.minY
+                    stage.width=Screen.getPrimary().visualBounds.minX+Screen.getPrimary().visualBounds.width
+                    stage.height=Screen.getPrimary().visualBounds.minY+Screen.getPrimary().visualBounds.height
                 }
                 ScreenState.LEFT->{
-                    stage.x=Screen.getPrimary().visualBounds.minX;
-                    stage.y=Screen.getPrimary().visualBounds.minY;
-                    stage.width=Screen.getPrimary().visualBounds.width*0.5;
-                    stage.height=Screen.getPrimary().visualBounds.height;
+                    stage.x=Screen.getPrimary().visualBounds.minX
+                    stage.y=Screen.getPrimary().visualBounds.minY
+                    stage.width=Screen.getPrimary().visualBounds.width*0.5
+                    stage.height=Screen.getPrimary().visualBounds.height
                 }
                 ScreenState.RIGHT->{
-                    stage.x=0.5*(Screen.getPrimary().visualBounds.maxX-Screen.getPrimary().visualBounds.minX);
-                    stage.y=Screen.getPrimary().visualBounds.minY;
-                    stage.width=Screen.getPrimary().visualBounds.width*0.5;
-                    stage.height=Screen.getPrimary().visualBounds.height;
+                    stage.x=0.5*(Screen.getPrimary().visualBounds.maxX-Screen.getPrimary().visualBounds.minX)
+                    stage.y=Screen.getPrimary().visualBounds.minY
+                    stage.width=Screen.getPrimary().visualBounds.width*0.5
+                    stage.height=Screen.getPrimary().visualBounds.height
                 }
 
                 ScreenState.NORMAL -> {
-                    stage.width=previousWidth;
-                    stage.height=previousHeight;
-                    stage.x=Screen.getPrimary().visualBounds.minX+Screen.getPrimary().visualBounds.width*0.5-stage.width*0.5;
-                    stage.y=Screen.getPrimary().visualBounds.minY+Screen.getPrimary().visualBounds.height*0.5-stage.height*0.5;
+                    stage.width=previousWidth
+                    stage.height=previousHeight
+                    stage.x=Screen.getPrimary().visualBounds.minX+Screen.getPrimary().visualBounds.width*0.5-stage.width*0.5
+                    stage.y=Screen.getPrimary().visualBounds.minY+Screen.getPrimary().visualBounds.height*0.5-stage.height*0.5
 
-                    screenState=ScreenState.NORMAL;
+                    screenState=ScreenState.NORMAL
                 }
             }
 
-            screenState=desiredScreenState;
+            screenState=desiredScreenState
 
-            onRescale?.invoke(this);
+            onRescale?.invoke(this)
         }
     }
 
     class MouseRescaleHandler(val cursor:Cursor, val offsetX:Double, val offsetY:Double, val scaleX:Double, val scaleY:Double) : EventHandler<MouseEvent>
     {
-        private var prevScreenX:Double=0.0;
-        private var prevScreenY:Double=0.0;
+        private var prevScreenX:Double=0.0
+        private var prevScreenY:Double=0.0
 
         override fun handle(event: MouseEvent?) {
             if(event==null||Window.mainWindow==null||Window.mainWindow!!.isApplicationMaximized())
-                return;
+                return
 
             when(event.eventType)
             {
