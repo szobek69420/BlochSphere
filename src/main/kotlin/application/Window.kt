@@ -34,7 +34,7 @@ class Window() : Application() {
     lateinit var root: Parent
 
     override fun start(primaryStage: Stage?) {
-        var loader:FXMLLoader=FXMLLoader(this.javaClass.getResource("/layouts/MainScene.fxml"))
+        var loader:FXMLLoader=FXMLLoader(this.javaClass.getResource("/layouts/MainScene.exe"))
         root =loader.load()
 
 

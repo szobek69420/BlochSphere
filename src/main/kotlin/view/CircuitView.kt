@@ -63,7 +63,7 @@ class CircuitView(val circuitContainer: Pane, val normieContainer:FlowPane, val 
             {
                 customPhaseContainer.children.clear();
                 customPhaseContainer.children.add(QuantumGateView("P|${customPhaseSlider.value}",-1, Color(0.96,0.59,0.11,1.0),{t,i,e->onQuantumGateGrab(t,i,e);}, {t,e->onQuantumGateDrag(t,e);}));
-                customPhaseText.text="Phase angle: ${String.format("%.2f",customPhaseSlider.value)}°"
+                customPhaseText.text="Phase: ${String.format("%.2f",customPhaseSlider.value)}°"
             }
         }
         customPhaseSlider.adjustValue(0.0)
