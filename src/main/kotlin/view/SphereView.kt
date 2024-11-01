@@ -13,7 +13,9 @@ import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
 import javafx.scene.paint.PhongMaterial
+import javafx.scene.shape.CullFace
 import javafx.scene.shape.MeshView
+import javafx.scene.shape.Shape3D
 import javafx.scene.shape.Sphere
 import javafx.scene.transform.Rotate
 import javafx.scene.transform.Scale
@@ -146,6 +148,7 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
     private var value:Qubit=Qubit(Complex(1.0,0.0),Complex(0.0,0.0))
 
     private var sphere: MeshView
+    private var sphereFlipped:MeshView
     private var arrow:QubitArrow
     private var light: LightBase
     private lateinit var axes:Array<Axis?>
@@ -159,13 +162,29 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
 
     init{
         val importer:ObjModelImporter=ObjModelImporter()
-        sphere=importSphere(importer)
+        val importerFlipped:ObjModelImporter=ObjModelImporter()
+        val spheres=importSphere(importer,importerFlipped)
         importer.close()
+        importerFlipped.close()
+
+        sphere=spheres.first
         sphere.let{
             it.transforms.clear()
             it.transforms.addAll(Translate(0.0,0.0,0.0))
 
             val mat:PhongMaterial=PhongMaterial(Color(0.4,0.4,0.4,0.1))
+            mat.specularColor=Color.TRANSPARENT
+            it.material=mat
+
+            it.blendMode=BlendMode.MULTIPLY
+        }
+
+        sphereFlipped=spheres.second
+        sphereFlipped.let{
+            it.transforms.clear()
+            it.transforms.addAll(Translate(0.0,0.0,0.0))
+
+            val mat:PhongMaterial=PhongMaterial(Color(0.1,0.1,0.1,0.1))
             mat.specularColor=Color.TRANSPARENT
             it.material=mat
 
@@ -199,6 +218,7 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
 
             rootGroup.children.add(light)
             rootGroup.children.add(sphere)
+            rootGroup.children.add(sphereFlipped)
             rootGroup.children.add(arrow)
             initAxes(rootGroup)
 
@@ -284,11 +304,15 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
         qubitError.onResize()
     }
 
-    private fun importSphere(importer:ObjModelImporter):MeshView
+    private fun importSphere(importer:ObjModelImporter,importerFlipped:ObjModelImporter):Pair<MeshView,MeshView>
     {
         importer.clear()
         importer.read(this.javaClass.getResource("/models/sphere_grid.exe"))
-        return importer.import[0]
+
+        importerFlipped.clear()
+        importerFlipped.read(this.javaClass.getResource("/models/sphere_grid_flipped_normals.exe"));
+
+        return Pair(importer.import[0],importerFlipped.import[0])
     }
 
     private fun initAxes(root:Group)
