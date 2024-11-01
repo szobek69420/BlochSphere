@@ -21,6 +21,7 @@ import javafx.scene.transform.Rotate
 import javafx.scene.transform.Scale
 import javafx.scene.transform.Translate
 import main.kotlin.elements.Billboard
+import main.kotlin.elements.BillboardVertical
 import main.kotlin.elements.Line3D
 import main.kotlin.maths.Complex
 import main.kotlin.quantum.Qubit
@@ -153,7 +154,7 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
     private var arrow:QubitArrow
     private var light: LightBase
     private val axes:Array<Axis?> = Array<Axis?>(3){_->null}
-    private val axisLabels:Array<Billboard?> = Array<Billboard?>(3){ _ ->null }
+    private val axisLabels:Array<BillboardVertical?> = Array<BillboardVertical?>(3){ _ ->null }
     private var qubitInfo:QubitInfoDisplay
     private var qubitError:QubitInvalidValueDisplay
 
@@ -257,9 +258,8 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
         camera.transforms.add(translation)
 
         //update billboards
-        val cameraPos=camera.localToParentTransform.transform(Point3D.ZERO)
         for(label in axisLabels)
-            label?.update(cameraPos)
+            label?.update(camera.localToSceneTransform)
     }
 
     private fun refreshValueView()
@@ -382,20 +382,20 @@ class SphereView(var subScene:SubScene, var subSceneParent: AnchorPane) {
         //axis labels
 
         //x axis
-        val xLabel=Billboard("/sprites/x_label.png")
+        val xLabel=BillboardVertical("/sprites/x_label.png")
         xLabel.myTransforms.add(Translate(1.25,-0.1,0.0))
         xLabel.myTransforms.add(Scale(0.1,0.1,0.1))
         axisLabels[0]=xLabel
 
         //y axis
-        val yLabel=Billboard("/sprites/y_label.png")
-        yLabel.myTransforms.add(Translate(0.0,-0.1,1.25))
+        val yLabel=BillboardVertical("/sprites/y_label.png")
+        yLabel.myTransforms.add(Translate(0.0, -0.1,1.25))
         yLabel.myTransforms.add(Scale(0.1,0.1,0.1))
         axisLabels[1]=yLabel
 
         //z axis
-        val zLabel=Billboard("/sprites/z_label.png")
-        zLabel.myTransforms.add(Translate(0.077,-1.25,-0.077))
+        val zLabel=BillboardVertical("/sprites/z_label.png")
+        zLabel.myTransforms.add(Translate(0.0,-1.25,0.0))
         zLabel.myTransforms.add(Scale(0.1,0.1,0.1))
         axisLabels[2]=zLabel
 

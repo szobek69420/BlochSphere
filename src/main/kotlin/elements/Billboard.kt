@@ -1,6 +1,7 @@
 package main.kotlin.elements
 
 import javafx.geometry.Point3D
+import javafx.scene.Camera
 import javafx.scene.image.Image
 import javafx.scene.paint.Color
 import javafx.scene.paint.PhongMaterial
@@ -15,7 +16,7 @@ import kotlin.math.asin
 import kotlin.math.atan2
 
 //it only works if no Rotate transform is applied on the object
-class Billboard(private val texturePath:String): MeshView() {
+open class Billboard(val texturePath:String): MeshView() {
 
     val myTransforms:ArrayList<Transform> = ArrayList<Transform>()
 
@@ -44,14 +45,14 @@ class Billboard(private val texturePath:String): MeshView() {
         this.material=mat
     }
 
-    fun update(cameraPos:Point3D)
+    open fun update(cameraToWorld:Transform)
     {
         transforms.clear()
         transforms.addAll(myTransforms)
         transforms.addAll(myTransforms.filterIsInstance<Rotate>().reversed().map{ r -> Rotate(-r.angle,r.axis)})
 
-        var worldPos=Point3D.ZERO
-        worldPos=this.localToSceneTransform.transform(worldPos)
+        val worldPos=this.localToSceneTransform.transform(Point3D.ZERO)
+        val cameraPos=cameraToWorld.transform(Point3D.ZERO)
 
         val delta=Point3D(cameraPos.x-worldPos.x,cameraPos.y-worldPos.y,cameraPos.z-worldPos.z).normalize()
 
