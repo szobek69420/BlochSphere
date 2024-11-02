@@ -285,10 +285,19 @@ class Window() : Application() {
                     val deltaX=event.screenX-prevScreenX
                     val deltaY=event.screenY-prevScreenY
 
-                    Window.mainWindow!!.stage.x+=deltaX*offsetX
-                    Window.mainWindow!!.stage.y+=deltaY*offsetY
-                    Window.mainWindow!!.stage.width+=deltaX*scaleX
-                    Window.mainWindow!!.stage.height+=deltaY*scaleY
+                    val width=Window.mainWindow!!.stage.width+deltaX*scaleX
+                    val height=Window.mainWindow!!.stage.height+deltaY*scaleY
+
+                    if(width>200.0)
+                    {
+                        Window.mainWindow!!.stage.x+=deltaX*offsetX
+                        Window.mainWindow!!.stage.width=width
+                    }
+                    if(height>200.0)
+                    {
+                        Window.mainWindow!!.stage.y+=deltaY*offsetY
+                        Window.mainWindow!!.stage.height=height
+                    }
 
                     prevScreenX=event.screenX
                     prevScreenY=event.screenY
